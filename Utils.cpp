@@ -13,11 +13,12 @@ double Utils::manhattanDistance(const Position& a,
   return abs(a.x - b.x) + abs(a.y - b.y);
 }
 
-map<Position, double> Utils::mazeDistances(
+void Utils::mazeDistances(
   const Position& a,
-  const GameState& state) {
+  const GameState& state,
+  map<Position, double>& distances) {
 
-  map<Position, double> distances;
+  assert(distances.size() == 0);
   set<Position> nodes;
   for (int y = 0; y < kLevelRows; y++) {
     for (int x = 0; x < kLevelCols; x++) {
@@ -32,9 +33,8 @@ map<Position, double> Utils::mazeDistances(
   }
   distances[a] = 0;
   assert(distances.size() == nodes.size());
-
   while (!nodes.empty()) {
-    Position minNode = *(nodes.begin());
+    set<Position>::iterator minNode = nodes.begin();
     double minDist = kInfinity;
     for (set<Position>::iterator it = nodes.begin();
 	 it != nodes.end();
@@ -42,7 +42,7 @@ map<Position, double> Utils::mazeDistances(
       const double dist = distances[*it];
       if (dist < minDist) {
 	minDist = dist;
-	minNode = *it;
+	minNode = it;
       }
     }
     nodes.erase(minNode);
@@ -51,9 +51,9 @@ map<Position, double> Utils::mazeDistances(
 	if ((dx == 0) && (dy == 0)) {
 	  continue;
 	}
-	Position neighbor(minNode.x + dx, minNode.y + dy);
+	Position neighbor(minNode->x + dx, minNode->y + dy);
 	if (nodes.count(neighbor)) {
-	  double alt = distances[minNode] + 1;
+	  double alt = distances[*minNode] + 1;
 	  if (alt < distances[neighbor]) {
 	    assert(distances.count(neighbor));
 	    distances[neighbor] = alt;
@@ -62,6 +62,4 @@ map<Position, double> Utils::mazeDistances(
       }
     }
   }
-
-  return distances;
 }

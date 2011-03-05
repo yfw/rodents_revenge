@@ -8,9 +8,10 @@ class Utils {
  public:
   static double manhattanDistance(const Position& a,
 				  const Position& b);
-  static map<Position, double> mazeDistances(
+  static void mazeDistances(
     const Position& a,
-    const GameState& state);
+    const GameState& state,
+    map<Position, double>& distances);
 };
 
 #endif

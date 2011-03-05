@@ -126,7 +126,7 @@ GameState GameState::getNext(const Action& action) const {
 	next.set(x, y, BLOCK);
       }
     } else if (get(x, y) == CHEESE) {
-      next.score_ += 1;
+      next.score_ += 2;
     }
     for (int i = 1; i < agentPositions_.size(); i++) {
       if (getActions(i).size() > 1) {
@@ -137,6 +137,7 @@ GameState GameState::getNext(const Action& action) const {
     if (cheesed) {
       for (int i = 1; i < agentPositions_.size(); i++) {
 	next.set(agentPositions_[i], CHEESE);
+	next.score_ += 1;
       }
     }
   } else {

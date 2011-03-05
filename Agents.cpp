@@ -37,26 +37,28 @@ Action MouseAgent::getAction(const GameState& state) {
       maxActions.push_back(actions[i]);
     }
   }
-  if (maxActions == actions) {
-    Action x = maxActions[0];
-    x.to = x.from;
-    return x;
-  }
   random_shuffle(maxActions.begin(), maxActions.end());
   return maxActions[0];
 }
 
 double MouseAgent::evaluate(const GameState& state) {
-  map<Position, double> distances =
-    Utils::mazeDistances(state.getMousePosition(), state);
-  double distanceToCats = kInfinity;
+  map<Position, double> distances;
+  Utils::mazeDistances(state.getMousePosition(), state, distances);
+
+  double minDistanceToCats = kInfinity;
+  double spreadDistanceToCats = 0;
   for (int i = 1; i <= state.getNumAgents() - 1; i++) {
-    Position catPosition = state.getCatPosition(i);
-    if (distances[catPosition] < distanceToCats) {
-      distanceToCats = distances[catPosition];
+    const Position& catPosition = state.getCatPosition(i);
+    const double distance = distances[catPosition];
+    if (distance < minDistanceToCats) {
+      minDistanceToCats = distance;
+    }
+    if (distance < kInfinity - 1) {
+      spreadDistanceToCats += (1 / distance);
     }
   }
-  return min(kInfinity, distanceToCats);
+  double score = state.getScore();
+  return minDistanceToCats + spreadDistanceToCats;
 }
 
 Action KeyboardAgent::getAction(const GameState& state) {
