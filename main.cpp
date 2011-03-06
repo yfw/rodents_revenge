@@ -37,6 +37,7 @@ int main(int argc, char* argv[]) {
   weights.push_back(1);
   weights.push_back(1);
   weights.push_back(1);
+  weights.push_back(1);
   MouseAgent mouse(weights, cats);
   run(g, mouse, cats);
 

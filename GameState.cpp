@@ -26,7 +26,7 @@ bool GameState::load(const string& fileName) {
       set(x, y, level[y][x]);
       if (level[y][x] == MOUSE) {
         agentPositions_.insert(agentPositions_.begin(),
-            Position(x, y));
+			       Position(x, y));
       } else if (level[y][x] == CAT) {
         agentPositions_.push_back(Position(x, y));
       }
