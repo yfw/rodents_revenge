@@ -189,7 +189,7 @@ void GameState::print() const {
   cout << "Score: " << score_ << endl;
   cout << "Time: " << time_ << endl;
   for (int i = 0; i < agentPositions_.size(); i++) {
-    //    printAgent(i);
+    printAgent(i);
   }
 }
 

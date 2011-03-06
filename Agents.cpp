@@ -7,24 +7,48 @@
 #include "Constants.h"
 
 Action MouseAgent::getAction(const GameState& state) const {
-  const vector<Action> actions = state.getActions(idx_);
-  vector<Action> maxActions;
-  double maxScore = -kInfinity;
+  vector<Action> actions = state.getActions(idx_);
+  double value;
+  Action a = MouseAgent::minMax(state, 0, &value);
+  return a;
+}
 
+Action MouseAgent::minMax(const GameState& state, int level, double * value) const {
+  if (state.wasCheesed() ||
+      state.gameOver() ||
+      level == (depth * state.getNumAgents())) {
+    *value = evaluate(state);
+    Action a = Action();
+    return a;
+  }
+
+  int agentIndex = level % state.getNumAgents();
+  bool takeMax;
+  if (agentIndex > 0) { // Cat agent
+    *value = kInfinity;
+    takeMax = false;
+  } else { // Mouse agent
+    *value = -kInfinity;
+    takeMax = true;
+  }
+
+  vector<GameState> successors;
+  vector<Action> actions = state.getActions(agentIndex);
+  Action best_action;
   for (int i = 0; i < actions.size(); i++) {
-    const GameState next = state.getNext(actions[i]);
-    double score = evaluate(next);
-    if (score > maxScore) {
-      maxScore = score;
-      maxActions.clear();
-      maxActions.push_back(actions[i]);
-    } else if (score == maxScore) {
-      maxActions.push_back(actions[i]);
+    GameState successor = state.getNext(actions[i]);
+    double nextV;
+    MouseAgent::minMax(successor, level + 1, &nextV);
+    if ((takeMax && nextV > *value) || 
+	(!takeMax && nextV < *value)) {
+      *value = nextV;
+      best_action = actions[i];
     }
   }
-  random_shuffle(maxActions.begin(), maxActions.end());
-  return maxActions[0];
+
+  return best_action;
 }
+
 
 double MouseAgent::evaluate(const GameState& state) const {
   map<Position, double> distances;
@@ -47,8 +71,7 @@ double MouseAgent::evaluate(const GameState& state) const {
     minDistanceToCats * weights_.at(0) +
     minDistanceToCats * weights_.at(1) +
     minDistanceToCats * weights_.at(2);
-
-  return minDistanceToCats + spreadDistanceToCats + score;
+  return value;
 }
 
 Action KeyboardAgent::getAction(const GameState& state) const {

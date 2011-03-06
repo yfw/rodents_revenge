@@ -30,9 +30,11 @@ class MouseAgent : public Agent {
     : Agent(0),
       weights_(weights) {}
   Action getAction(const GameState& state) const;
-  double evaluate(const GameState& state) const;
- private:
+ protected:
   vector<double> weights_;
+  static const int depth = 1;
+  double evaluate(const GameState& state) const;
+  Action minMax(const GameState& state, int level, double* value) const;
 };
 
 class KeyboardAgent : public Agent {

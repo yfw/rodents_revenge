@@ -20,6 +20,7 @@ int run(const GameState& state,
       g = g.getNext(cats[g.getTurn() - 1].getAction(g));
     }
   }
+  system("clear");
   g.print();
   return g.getScore();
 }
