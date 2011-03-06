@@ -23,6 +23,7 @@ Action CatAgent::getAction(const GameState& state) {
 }
 
 Action MouseAgent::getAction(const GameState& state) {
+  /*
   const vector<Action> actions = state.getActions(idx_);
   vector<Action> maxActions;
   double maxScore = -kInfinity;
@@ -39,7 +40,50 @@ Action MouseAgent::getAction(const GameState& state) {
   }
   random_shuffle(maxActions.begin(), maxActions.end());
   return maxActions[0];
+  */
+  vector<Action> actions = state.getActions(idx_);
+  double value;
+  Action a = MouseAgent::minMax(state, 0, &value);
+  //  cout << "returned action: (" << a.to.x << ", " << a.to.y << ") \n";
+  return a;
 }
+
+Action MouseAgent::minMax(const GameState& state, int level, double * value) {
+  if (state.wasCheesed() ||
+      state.gameOver() ||
+      level == (depth * state.getNumAgents())) {
+    *value = evaluate(state);
+    Action a = Action();
+    return a;
+  }
+
+  int agentIndex = level % state.getNumAgents();
+  bool takeMax;
+  if (agentIndex > 0) { // Cat agent
+    *value = kInfinity;
+    takeMax = false;
+  } else { // Mouse agent
+    *value = -kInfinity;
+    takeMax = true;
+  }
+
+  vector<GameState> successors;
+  vector<Action> actions = state.getActions(agentIndex);
+  Action best_action;
+  for (int i = 0; i < actions.size(); i++) {
+    GameState successor = state.getNext(actions[i]);
+    double nextV;
+    MouseAgent::minMax(successor, level + 1, &nextV);
+    if ((takeMax && nextV > *value) || 
+	(!takeMax && nextV < *value)) {
+      *value = nextV;
+      best_action = actions[i];
+    }
+  }
+
+  return best_action;
+}
+
 
 double MouseAgent::evaluate(const GameState& state) {
   map<Position, double> distances;
@@ -58,7 +102,7 @@ double MouseAgent::evaluate(const GameState& state) {
     }
   }
   double score = state.getScore();
-  return minDistanceToCats + spreadDistanceToCats;
+  return minDistanceToCats + spreadDistanceToCats + score;
 }
 
 Action KeyboardAgent::getAction(const GameState& state) {

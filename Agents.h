@@ -29,6 +29,10 @@ class MouseAgent : public Agent {
   MouseAgent(const int idx) : Agent(idx) {}
   Action getAction(const GameState& state);
   double evaluate(const GameState& state);
+
+ protected:
+  static const int depth = 1;
+  Action minMax(const GameState& state, int level, double * value);
 };
 
 class KeyboardAgent : public Agent {
