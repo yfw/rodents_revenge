@@ -20,7 +20,7 @@ class Utils {
     const Position& position,
     const GameState& state,
     const int peakDistance,
-    const int cutoff = 83);
+    const int cutoff = 100000);
 
   static double mapGetDefault(
     const map<Position, double>& m,

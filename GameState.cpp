@@ -58,6 +58,12 @@ bool GameState::isCatPosition(const int x, const int y) const {
   return get(x, y) == CAT;
 }
 
+bool GameState::isCatStuck(const int catIdx) const {
+  vector<Action> actions = getActions(catIdx);
+  Position position = getPosition(catIdx);
+  return ((actions.size() == 1) && (actions[0] == Action(position, position)));
+}
+
 Position GameState::getPosition(const int idx) const {
   if (idx == 0) {
     return getMousePosition();
@@ -154,8 +160,9 @@ GameState GameState::getNext(const Action& action) const {
       next.decayedScore_ += (2 * pow(0.99, next.time_));
     }
     for (int i = 1; i < agentPositions_.size(); i++) {
-      vector<Action> catActions = getActions(i);
-      if ((catActions.size() > 1) || !(catActions[0] == Action(getPosition(i), getPosition(i)))) {
+      //vector<Action> catActions = getActions(i);
+      //if ((catActions.size() > 1) || !(catActions[0] == Action(getPosition(i), getPosition(i)))) {
+      if (!isCatStuck(i)) {
 	cheesed = false;
         break;
       }

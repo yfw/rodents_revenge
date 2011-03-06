@@ -59,6 +59,7 @@ class GameState {
   vector<Action> getActions(const int idx) const;
   bool isCheesePosition(const int x, const int y) const;
   bool isCatPosition(const int x, const int y) const;
+  bool isCatStuck(const int catIdx) const;
 
   GameState getNext(const Action& action) const;
   ObjType get(const int x, const int y) const;

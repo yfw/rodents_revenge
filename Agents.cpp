@@ -7,7 +7,8 @@
 #include "Constants.h"
 
 Action MouseAgent::getAction(const GameState& state) const {
-  cout << "Value " << MouseAgent::evaluate(state) << endl;
+  //cout << "Value: " << MouseAgent::evaluate(state) << endl;
+  //exit(0);
   vector<Action> actions = state.getActions(idx_);
   Action bestAction;
   double value = MouseAgent::alphaBeta(state, 0, -kInfinity, kInfinity, &bestAction);
@@ -86,16 +87,27 @@ double MouseAgent::evaluate(const GameState& state) const {
 
   double distanceCatsInverse = 0;
   double freedomScoreCats = 0;
+  double minManhattanDistanceCats = 10000;
   for (int i = 1; i <= state.getNumAgents() - 1; i++) {
     const Position& catPosition = state.getCatPosition(i);
     const double distance = Utils::mapGetDefault(mouseDistances,
 						 catPosition,
 						 kInfinity);
+    const double manhattanDistance =
+      Utils::manhattanDistance(state.getMousePosition(),
+			       catPosition);
+
     if (distance >= 1) {
       distanceCatsInverse += (1 / distance);
     } else {
       return -10000;
     }
+
+    if (!state.isCatStuck(i) &&
+	(manhattanDistance < minManhattanDistanceCats)) {
+      minManhattanDistanceCats = manhattanDistance;
+    }
+
     freedomScoreCats += Utils::freedomScore(catPosition, state, 3);
   }
 
@@ -116,9 +128,10 @@ double MouseAgent::evaluate(const GameState& state) const {
   double score = state.getDecayedScore();
   double value =
     -weights_.at(1) * distanceCatsInverse +
-    weights_.at(2) * distanceCheesesInverse +
-    10 * weights_.at(3) * score +
-    -weights_.at(4) * freedomScoreCats;
+    -weights_.at(2) * minManhattanDistanceCats +
+    weights_.at(3) * distanceCheesesInverse +
+    weights_.at(4) * score +
+    -weights_.at(5) * freedomScoreCats * 10;
 
   if (true) {
     //cerr << "Score: " << score << endl;

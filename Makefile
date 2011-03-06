@@ -11,4 +11,4 @@ clean:
 	rm *.o *~ *.gch rr
 
 run: rr
-	./rr Levels/test3
+	./rr Levels/test5

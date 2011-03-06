@@ -88,7 +88,8 @@ double Utils::freedomScore(
   for (int i = 0; i < visitedDistances.size(); i++) {
     double distance = visitedDistances[i];
     if (distance <= peakDistance) {
-      score += 0.5 * distance / peakDistance + 0.5;
+      //score += 0.5 * distance / peakDistance + 0.5;
+      score += 1;
     } else if ((distance - peakDistance) <= 10) {
       score += (10 - (distance - peakDistance)) / 20.0;
     }
