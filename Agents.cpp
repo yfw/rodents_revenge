@@ -72,38 +72,43 @@ Action MouseAgent::alphaBeta(
 double MouseAgent::evaluate(const GameState& state) const {
   map<Position, double> distances;
   Utils::mazeDistances(state.getMousePosition(), state, distances);
-  double minDistanceToCats = kInfinity;
-  double spreadDistanceToCats = 0;
+  double distanceCatMin = kInfinity;
+  double distanceCatsInverse = 0;
   for (int i = 1; i <= state.getNumAgents() - 1; i++) {
     const Position& catPosition = state.getCatPosition(i);
     const double distance = distances[catPosition];
-    if (distance < minDistanceToCats) {
-       minDistanceToCats = distance;
+    if (distance < distanceCatMin) {
+       distanceCatMin = distance;
     }
     if (distance < kInfinity - 1) {
-      spreadDistanceToCats += (1 / distance);
+      distanceCatsInverse += (1 / distance);
     }
   }
   
-  double minDistanceToCheese = kInfinity;
+  double distanceCheeseMin = kInfinity;
+  double distanceCheesesInverse = 0;
   for (int y = 0; y < kLevelCols; y++) {
     for (int x = 0; x < kLevelCols; x++) {
       if (state.isCheesePosition(x, y)) {
         const double distance = distances[Position(x,y)];
-        if (distance < minDistanceToCheese) {
-          minDistanceToCheese = distance;
+        if (distance < distanceCheeseMin) {
+          distanceCheeseMin = distance;
         }
+	if (distance < kInfinity - 1) {
+	  distanceCheesesInverse += (1 / distance);
+	}
       }
     }
   }
-  double cheeseInverse = 1 / (minDistanceToCheese + 1);
   double score = state.getScore();
 
   double value =
-    minDistanceToCats * weights_.at(0) +
-    minDistanceToCats * weights_.at(1) +
-    minDistanceToCats * weights_.at(2) +
-    cheeseInverse * weights_.at(3);
+    weights_.at(0) * distanceCatMin +
+    weights_.at(1) * distanceCatsInverse +
+    weights_.at(2) * distanceCheeseMin +
+    weights_.at(3) * distanceCheesesInverse * 
+    weights_.at(4) * score;
+
   return value;
 }
 
