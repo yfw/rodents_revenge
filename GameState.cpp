@@ -77,7 +77,8 @@ vector<Action> GameState::getMouseActions() const {
   for (int dy = -1; dy <= 1; dy++) {
     for (int dx = -1; dx <= 1; dx++) {
       if ((dx == 0) && (dy == 0)) {
-	continue;
+	// debug this, why wont it trap the cat?
+	//continue;
       }
       int x = from.x + dx;
       int y = from.y + dy;

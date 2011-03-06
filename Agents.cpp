@@ -13,6 +13,7 @@ Action MouseAgent::getAction(const GameState& state) const {
   Action bestAction;
   double value = MouseAgent::alphaBeta(state, 0, -kInfinity, kInfinity, &bestAction);
   //cout << "Action: " << bestAction.to.x << ", " << bestAction.to.y << endl;
+  //exit(0);
   return bestAction;
 }
 
@@ -85,9 +86,13 @@ double MouseAgent::evaluate(const GameState& state) const {
     return 10000;
   }
 
+  if (state.gameOver()) {
+    return -1000;
+  }
+
   double distanceCatsInverse = 0;
   double freedomScoreCats = 0;
-  double minManhattanDistanceCats = 10000;
+  double minManhattanDistanceCats = 100;
   for (int i = 1; i <= state.getNumAgents() - 1; i++) {
     const Position& catPosition = state.getCatPosition(i);
     const double distance = Utils::mapGetDefault(mouseDistances,
@@ -99,8 +104,6 @@ double MouseAgent::evaluate(const GameState& state) const {
 
     if (distance >= 1) {
       distanceCatsInverse += (1 / distance);
-    } else {
-      return -10000;
     }
 
     if (!state.isCatStuck(i) &&
@@ -108,7 +111,7 @@ double MouseAgent::evaluate(const GameState& state) const {
       minManhattanDistanceCats = manhattanDistance;
     }
 
-    freedomScoreCats += Utils::freedomScore(catPosition, state, 3);
+    freedomScoreCats += Utils::freedomScore(catPosition, state, 6);
   }
 
   double distanceCheesesInverse = 0;
@@ -127,15 +130,15 @@ double MouseAgent::evaluate(const GameState& state) const {
 
   double score = state.getDecayedScore();
   double value =
-    -weights_.at(1) * distanceCatsInverse +
-    -weights_.at(2) * minManhattanDistanceCats +
-    weights_.at(3) * distanceCheesesInverse +
-    weights_.at(4) * score +
+    -weights_.at(1) * distanceCatsInverse * 10 +
+    -weights_.at(2) * minManhattanDistanceCats * 0.001 +
+     weights_.at(3) * distanceCheesesInverse +
+     weights_.at(4) * score +
     -weights_.at(5) * freedomScoreCats * 10;
 
   if (true) {
     //cerr << "Score: " << score << endl;
-    //cerr << "Value: " << value << endl;
+    //cerr << "Value: " << minManhattanDistanceCats << endl;
   }
 
   return value;
