@@ -7,8 +7,7 @@
 #include "Constants.h"
 
 Action MouseAgent::getAction(const GameState& state) const {
-  //cout << "Value " << MouseAgent::evaluate(state) << endl;
-  ///exit(0);
+  cout << "Value " << MouseAgent::evaluate(state) << endl;
   vector<Action> actions = state.getActions(idx_);
   Action bestAction;
   double value = MouseAgent::alphaBeta(state, 0, -kInfinity, kInfinity, &bestAction);
@@ -82,7 +81,7 @@ double MouseAgent::evaluate(const GameState& state) const {
   Utils::shortestDistances(state.getMousePosition(), state, &mouseDistances);
 
   if (state.wasCheesed()) {
-    return 1000;
+    return 10000;
   }
 
   double distanceCatsInverse = 0;
@@ -97,7 +96,7 @@ double MouseAgent::evaluate(const GameState& state) const {
     } else {
       return -10000;
     }
-    freedomScoreCats += Utils::freedomScore(catPosition, state, 4);
+    freedomScoreCats += Utils::freedomScore(catPosition, state, 3);
   }
 
   double distanceCheesesInverse = 0;
@@ -116,9 +115,9 @@ double MouseAgent::evaluate(const GameState& state) const {
 
   double score = state.getDecayedScore();
   double value =
-    //-weights_.at(1) * distanceCatsInverse +
-    //weights_.at(2) * distanceCheesesInverse +
-    //weights_.at(3) * score +
+    -weights_.at(1) * distanceCatsInverse +
+    weights_.at(2) * distanceCheesesInverse +
+    10 * weights_.at(3) * score +
     -weights_.at(4) * freedomScoreCats;
 
   if (true) {
