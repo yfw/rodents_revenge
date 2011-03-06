@@ -70,51 +70,46 @@ double MouseAgent::alphaBeta(
 
 double MouseAgent::evaluate(const GameState& state) const {
   map<Position, double> distances;
-  Utils::mazeDistances(state.getMousePosition(), state, distances);
+  Utils::shortestDistances(state.getMousePosition(), state, &distances);
+
   double distanceCatsInverse = 0;
-  double freedomCats = 0;
   for (int i = 1; i <= state.getNumAgents() - 1; i++) {
     const Position& catPosition = state.getCatPosition(i);
-    const double distance = distances[catPosition];
-    if (distance >= 1) {
+    const double distance = Utils::mapGetDefault(distances,
+						 catPosition,
+						 kInfinity);
+    if (distance > 0) {
       distanceCatsInverse += (1 / distance);
     } else {
       return -kInfinity;
     }
-    set<Position> visited;
-    //const double freedom = Utils::catFreedomScore(catPosition, state, visited);
-    freedomCats += Utils::catFreedomScore(catPosition, state, visited);
-    cout << "Freedom: " << freedomCats;
-    state.print();
-    exit(0);
   }
 
   double distanceCheesesInverse = 0;
   for (int y = 0; y < kLevelCols; y++) {
     for (int x = 0; x < kLevelCols; x++) {
       if (state.isCheesePosition(x, y)) {
-        const double distance = distances[Position(x,y)];
+	const double distance = Utils::mapGetDefault(distances,
+						     Position(x, y),
+						     kInfinity);
 	if (distance >= 1) {
 	  distanceCheesesInverse += (1 / distance);
 	}
       }
     }
   }
+
   double score = state.getDecayedScore();
   double value =
-    //-weights_.at(1) * distanceCatsInverse +
-    //weights_.at(2) * distanceCheesesInverse +
-    //weights_.at(3) * score + 
-    -weights_.at(4) * freedomCats;
+    -weights_.at(1) * distanceCatsInverse +
+    weights_.at(2) * distanceCheesesInverse +
+    weights_.at(3) * score;
 
   if (true) {
-    //cout << "DistanceCatsInverse: " << distanceCatsInverse << endl;
-    // << "DistanceCheesesInverse: " << distanceCheesesInverse << endl
     //cout << "Score: " << score << endl;
     //cout << "Value: " << value << endl;
-    cerr << "Freedom " << freedomCats << endl;
   }
-  usleep(100 *1000);
+
   return value;
 }
 

@@ -1,6 +1,9 @@
 
 #include <iostream>
 #include <map>
+#include <set>
+#include <queue>
+
 #include "Utils.h"
 #include "Constants.h"
 #include <assert.h>
@@ -12,85 +15,78 @@ double Utils::manhattanDistance(const Position& a,
   return abs(a.x - b.x) + abs(a.y - b.y);
 }
 
-void Utils::mazeDistances(
-  const Position& a,
+void Utils::shortestDistances(
+  const Position& position,
   const GameState& state,
-  map<Position, double>& distances) {
+  map<Position, double>* distancesPtr) {
 
-  assert(distances.size() == 0);
-  set<Position> nodes;
-  for (int y = 0; y < kLevelRows; y++) {
-    for (int x = 0; x < kLevelCols; x++) {
-      if ((state.get(x, y) == WALL) ||
-	  (state.get(x, y) == BLOCK)) {
-	continue;
-      }
-      const Position p(x, y);
-      distances[p] = kInfinity;
-      nodes.insert(p);
-    }
-  }
-  distances[a] = 0;
-  assert(distances.size() == nodes.size());
-  while (!nodes.empty()) {
-    set<Position>::iterator minNode = nodes.begin();
-    double minDist = kInfinity;
-    for (set<Position>::iterator it = nodes.begin();
-	 it != nodes.end();
-	 it++) {
-      const double dist = distances[*it];
-      if (dist < minDist) {
-	minDist = dist;
-	minNode = it;
-      }
-    }
-    nodes.erase(minNode);
+  queue<pair<Position, double> > Q;
+  set<Position> visited;
+  Q.push(make_pair(position, 0));
+  visited.insert(position);
+  while (!Q.empty()) {
+    pair<Position, double> front = Q.front();
+    const Position& node = front.first;
+    const double distance = front.second;
+    (*distancesPtr)[node] = distance;
+    Q.pop();
     for (int dy = -1; dy <= 1; dy++) {
       for (int dx = -1; dx <= 1; dx++) {
-	if ((dx == 0) && (dy == 0)) {
+	ObjType type = state.get(node.x + dx, node.y + dy);
+	if (((dx == 0) && (dy == 0)) ||
+	    (type == WALL) ||
+	    (type == BLOCK)) { 
 	  continue;
 	}
-	Position neighbor(minNode->x + dx, minNode->y + dy);
-	if (nodes.count(neighbor)) {
-	  double alt = distances[*minNode] + 1;
-	  if (alt < distances[neighbor]) {
-	    assert(distances.count(neighbor));
-	    distances[neighbor] = alt;
-	  }
+	Position neighbor(node.x + dx, node.y + dy);
+	if (!visited.count(neighbor)) {
+	  visited.insert(neighbor);
+	  Q.push(make_pair(neighbor, distance + 1));
 	}
       }
     }
   }
 }
 
+static double freedomScore(
+  const Position& position,
+  const GameState& state,
+  const int cutoff) {
 
-int Utils::catFreedomScore(const Position& position,
-			   const GameState& state,
-			   set<Position>& visited) {
-  if (state.get(position.x, position.y) == WALL ||
-      state.get(position.x, position.y) == BLOCK) {
-    return 0;
-  }
-
-  int scoreFromHere = 1;
-  for (int dy = -1; dy <= 1; dy++) {
-    for (int dx = -1; dx <= 1; dx++) {
-      if (dx == dy) {
-        continue;
-      }
-
-      int x = position.x + dx;
-      int y = position.y + dy;
-      if (state.isCatPosition(x, y)) {
-        continue;
-      }
-
-      Position neighbor = Position(x, y);
-      visited.insert(position);
-      if (visited.find(neighbor) == visited.end()) {
-        scoreFromHere += catFreedomScore(neighbor, state, visited);
+  queue<pair<Position, double> > Q;
+  set<Position> visited;
+  Q.push(make_pair(position, 0));
+  visited.insert(position);
+  while (!Q.empty()) {
+    pair<Position, double> front = Q.front();
+    const Position& node = front.first;
+    const double distance = front.second;
+    Q.pop();
+    for (int dy = -1; dy <= 1; dy++) {
+      for (int dx = -1; dx <= 1; dx++) {
+	ObjType type = state.get(node.x + dx, node.y + dy);
+	if (((dx == 0) && (dy == 0)) ||
+	    (type == WALL) ||
+	    (type == BLOCK)) { 
+	  continue;
+	}
+	Position neighbor(node.x + dx, node.y + dy);
+	if (!visited.count(neighbor)) {
+	  visited.insert(neighbor);
+	  Q.push(make_pair(neighbor, distance + 1));
+	}
       }
     }
   }
-  return scoreFromHere;
+
+  return Q.size();
+}
+
+double Utils::mapGetDefault(
+  const map<Position, double>& m,
+  const Position& key,
+  const double defaultValue) {
+
+  map<Position, double>::const_iterator it = m.find(key);
+  return (it == m.end()) ? defaultValue : it->second;
 }

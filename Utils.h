@@ -9,14 +9,21 @@ class Utils {
  public:
   static double manhattanDistance(const Position& a,
 				  const Position& b);
-  static void mazeDistances(
-    const Position& a,
-    const GameState& state,
-    map<Position, double>& distances);
 
-  static int catFreedomScore(const Position& position,
-			     const GameState& state,
-			     set<Position>& visited);
+  static void shortestDistances(
+    const Position& position,
+    const GameState& state,
+    map<Position, double>* distancesPtr);
+
+  static double freedomScore(
+    const Position& position,
+    const GameState& state,
+    const int cutoff);
+
+  static double mapGetDefault(
+    const map<Position, double>& m,
+    const Position& key,
+    const double defaultValue);
 };
 
 #endif
