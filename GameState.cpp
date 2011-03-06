@@ -54,6 +54,10 @@ bool GameState::isCheesePosition(const int x, const int y) const {
   return get(x, y) == CHEESE;
 }
 
+bool GameState::isCatPosition(const int x, const int y) const {
+  return get(x, y) == CAT;
+}
+
 Position GameState::getPosition(const int idx) const {
   if (idx == 0) {
     return getMousePosition();

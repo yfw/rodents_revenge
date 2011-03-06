@@ -1,7 +1,6 @@
 
 #include <iostream>
 #include <map>
-#include <set>
 #include "Utils.h"
 #include "Constants.h"
 #include <assert.h>
@@ -62,4 +61,36 @@ void Utils::mazeDistances(
       }
     }
   }
+}
+
+
+int Utils::catFreedomScore(const Position& position,
+			   const GameState& state,
+			   set<Position>& visited) {
+  if (state.get(position.x, position.y) == WALL ||
+      state.get(position.x, position.y) == BLOCK) {
+    return 0;
+  }
+
+  int scoreFromHere = 1;
+  for (int dy = -1; dy <= 1; dy++) {
+    for (int dx = -1; dx <= 1; dx++) {
+      if (dx == dy) {
+        continue;
+      }
+
+      int x = position.x + dx;
+      int y = position.y + dy;
+      if (state.isCatPosition(x, y)) {
+        continue;
+      }
+
+      Position neighbor = Position(x, y);
+      visited.insert(position);
+      if (visited.find(neighbor) == visited.end()) {
+        scoreFromHere += catFreedomScore(neighbor, state, visited);
+      }
+    }
+  }
+  return scoreFromHere;
 }

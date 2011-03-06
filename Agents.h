@@ -43,7 +43,7 @@ class MouseAgent : public Agent {
 
   vector<double> weights_;
   vector<CatAgent> cats_;
-  static const int depth = 2;
+  static const int depth = 1;
 };
 
 class KeyboardAgent : public Agent {

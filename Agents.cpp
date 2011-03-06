@@ -72,6 +72,7 @@ double MouseAgent::evaluate(const GameState& state) const {
   map<Position, double> distances;
   Utils::mazeDistances(state.getMousePosition(), state, distances);
   double distanceCatsInverse = 0;
+  double freedomCats = 0;
   for (int i = 1; i <= state.getNumAgents() - 1; i++) {
     const Position& catPosition = state.getCatPosition(i);
     const double distance = distances[catPosition];
@@ -80,6 +81,12 @@ double MouseAgent::evaluate(const GameState& state) const {
     } else {
       return -kInfinity;
     }
+    set<Position> visited;
+    //const double freedom = Utils::catFreedomScore(catPosition, state, visited);
+    freedomCats += Utils::catFreedomScore(catPosition, state, visited);
+    cout << "Freedom: " << freedomCats;
+    state.print();
+    exit(0);
   }
 
   double distanceCheesesInverse = 0;
@@ -95,16 +102,19 @@ double MouseAgent::evaluate(const GameState& state) const {
   }
   double score = state.getDecayedScore();
   double value =
-    -weights_.at(1) * distanceCatsInverse +
-    weights_.at(3) * distanceCheesesInverse +
-    weights_.at(4) * score;
+    //-weights_.at(1) * distanceCatsInverse +
+    //weights_.at(2) * distanceCheesesInverse +
+    //weights_.at(3) * score + 
+    -weights_.at(4) * freedomCats;
 
   if (true) {
     //cout << "DistanceCatsInverse: " << distanceCatsInverse << endl;
     // << "DistanceCheesesInverse: " << distanceCheesesInverse << endl
     //cout << "Score: " << score << endl;
     //cout << "Value: " << value << endl;
+    cerr << "Freedom " << freedomCats << endl;
   }
+  usleep(100 *1000);
   return value;
 }
 

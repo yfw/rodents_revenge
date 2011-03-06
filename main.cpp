@@ -19,6 +19,7 @@ int run(const GameState& state,
     } else {
       g = g.getNext(cats[g.getTurn() - 1].getAction(g));
     }
+    exit(0);
     usleep(1000 * 100);
   }
   system("clear");
