@@ -1,6 +1,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <math.h>
 #include <assert.h>
 #include "GameState.h"
 
@@ -32,6 +33,7 @@ bool GameState::load(const string& fileName) {
       }
     }
   }
+  decayedScore_ = 0;
   score_ = 0;
   turnIdx_ = 0;
   time_ = 0;
@@ -126,6 +128,9 @@ GameState GameState::getNext(const Action& action) const {
   const Position& to = action.to;
   const Position& from = action.from;
   bool cheesed = true;
+  next.time_++;
+  next.turnIdx_ = ((turnIdx_ + 1) % agentPositions_.size());
+
   if (turnIdx_ == 0) {
     int x = to.x;
     int y = to.y;
@@ -142,10 +147,12 @@ GameState GameState::getNext(const Action& action) const {
       }
     } else if (get(x, y) == CHEESE) {
       next.score_ += 2;
+      next.decayedScore_ += (2 * pow(0.99, next.time_));
     }
     for (int i = 1; i < agentPositions_.size(); i++) {
-      if (getActions(i).size() > 1) {
-        cheesed = false;
+      vector<Action> catActions = getActions(i);
+      if ((catActions.size() > 1) || !(catActions[0] == Action(getPosition(i), getPosition(i)))) {
+	cheesed = false;
         break;
       }
     }
@@ -153,9 +160,9 @@ GameState GameState::getNext(const Action& action) const {
       for (int i = 1; i < agentPositions_.size(); i++) {
         next.set(agentPositions_[i], CHEESE);
         next.score_ += 1;
+	next.decayedScore_ += (1 * pow(0.99, next.time_));
       }
     }
-    next.time_++;
   } else {
     int x = to.x;
     int y = to.y;
@@ -167,7 +174,6 @@ GameState GameState::getNext(const Action& action) const {
 
   next.set(from, NOTHING);
   next.setAgent(to, turnIdx_);
-  next.turnIdx_ = ((turnIdx_ + 1) % agentPositions_.size());
   next.wasCheesed_ = cheesed;
 
   if (cheesed) {

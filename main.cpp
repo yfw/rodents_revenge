@@ -19,6 +19,7 @@ int run(const GameState& state,
     } else {
       g = g.getNext(cats[g.getTurn() - 1].getAction(g));
     }
+    usleep(1000 * 100);
   }
   system("clear");
   g.print();
@@ -34,6 +35,7 @@ int main(int argc, char* argv[]) {
     cats.push_back(CatAgent(i));
   }
   vector<double> weights;
+  weights.push_back(1);
   weights.push_back(1);
   weights.push_back(1);
   weights.push_back(1);

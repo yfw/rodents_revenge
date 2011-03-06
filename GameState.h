@@ -46,8 +46,10 @@ class GameState {
   bool load(const string& fileName);
   void print() const;
 
-  int getScore() const { return score_; }
+  double getDecayedScore() const { return decayedScore_; }
+  double getScore() const { return score_; }
   int getTurn() const { return turnIdx_; }
+  int getTime() const { return time_; }
   int getNumAgents() const { return agentPositions_.size(); }
   bool gameOver() const { return (gameOver_ || time_ > kMaxTime); }
   bool wasCheesed() const { return wasCheesed_; }
@@ -73,7 +75,9 @@ class GameState {
 
   vector<ObjType> grid_;
   vector<Position> agentPositions_;
-  int score_;
+
+  double decayedScore_;
+  double score_;
   int turnIdx_;
   int time_;
   bool gameOver_;

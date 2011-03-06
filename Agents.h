@@ -34,15 +34,16 @@ class MouseAgent : public Agent {
   Action getAction(const GameState& state) const;
  protected:
   double evaluate(const GameState& state) const;
-  Action alphaBeta(const GameState& state,
+
+  double alphaBeta(const GameState& state,
 		   int level,
-		   double* value,
 		   double alpha,
-		   double beta) const;
+		   double beta,
+		   Action* bestAction) const;
 
   vector<double> weights_;
   vector<CatAgent> cats_;
-  static const int depth = 3;
+  static const int depth = 2;
 };
 
 class KeyboardAgent : public Agent {

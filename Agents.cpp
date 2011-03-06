@@ -8,107 +8,103 @@
 
 Action MouseAgent::getAction(const GameState& state) const {
   vector<Action> actions = state.getActions(idx_);
-  double value;
-  return MouseAgent::alphaBeta(state, 0, &value, -kInfinity, kInfinity);;
+  Action bestAction;
+  double value = MouseAgent::alphaBeta(state, 0, -kInfinity, kInfinity, &bestAction);
+  cout << "Value: " << value << endl;
+  cout << "Action: " << bestAction.to.x << ", " << bestAction.to.y << endl;
+  return bestAction;
 }
 
-Action MouseAgent::alphaBeta(
+double MouseAgent::alphaBeta(
   const GameState& state,
   int level,
-  double* value,
   double alpha,
-  double beta) const {
+  double beta,
+  Action* bestActionPtr) const {
 
   if (state.wasCheesed() ||
       state.gameOver() ||
       level == (depth * state.getNumAgents())) {
-    *value = evaluate(state);
-    Action a = Action();
-    return a;
+    return evaluate(state);
   }
 
   int agentIndex = level % state.getNumAgents();
-  bool takeMax = (agentIndex == 0);
-  if (agentIndex > 0) { // Cat agent
-    *value = kInfinity;
-  } else { // Mouse agent
-    *value = -kInfinity;
-  }
-
-  vector<Action> actions;
-  if (agentIndex == 0) {
-    actions = state.getActions(agentIndex);      
-  } else {
-    actions.push_back(cats_[agentIndex - 1].getAction(state));
-  }
+  bool isMax = (agentIndex == 0);
+  double value = isMax ? -kInfinity : kInfinity;
+  vector<Action> actions = isMax
+    ? state.getActions(agentIndex)
+    : vector<Action>(1, cats_[agentIndex - 1].getAction(state));
 
   Action bestAction;
   for (int i = 0; i < actions.size(); i++) {
     GameState successor = state.getNext(actions[i]);
-    double nextV;
-    MouseAgent::alphaBeta(successor, level + 1, &nextV, alpha, beta);
-    if ((takeMax && nextV > *value) ||
-        (!takeMax && nextV < *value)) {
-      *value = nextV;
-      bestAction = actions[i];
-    }
-    // Prune if possible
-    if ((takeMax && *value >= beta) ||
-	(!takeMax && *value <= alpha)) {
-      break;
-    }
-    // Update alpha & beta
-    if (!takeMax) {
-      beta = min(beta, *value);
+    double nextV = alphaBeta(successor, level + 1, alpha, beta, bestActionPtr);
+    if (isMax) {
+      if (value < nextV) {
+	bestAction = actions[i];
+	value = nextV;
+      }
+      if (value >= beta) {
+	break;
+      }
+      alpha = max(alpha, value);
     } else {
-      alpha = max(alpha, *value);
+      if (value > nextV) {
+	bestAction = actions[i];
+	value = nextV;
+      }
+      if (value <= alpha) {
+	break;
+      }
+      beta = min(beta, value);
     }
   }
 
-  return bestAction;
+  if (level == 0) {
+    *bestActionPtr = bestAction;
+  }
+
+  return value;
 }
 
 
 double MouseAgent::evaluate(const GameState& state) const {
   map<Position, double> distances;
   Utils::mazeDistances(state.getMousePosition(), state, distances);
-  double distanceCatMin = kInfinity;
   double distanceCatsInverse = 0;
   for (int i = 1; i <= state.getNumAgents() - 1; i++) {
     const Position& catPosition = state.getCatPosition(i);
     const double distance = distances[catPosition];
-    if (distance < distanceCatMin) {
-       distanceCatMin = distance;
-    }
-    if (distance < kInfinity - 1) {
+    if (distance >= 1) {
       distanceCatsInverse += (1 / distance);
+    } else {
+      return -kInfinity;
     }
   }
-  
-  double distanceCheeseMin = kInfinity;
+
   double distanceCheesesInverse = 0;
   for (int y = 0; y < kLevelCols; y++) {
     for (int x = 0; x < kLevelCols; x++) {
       if (state.isCheesePosition(x, y)) {
         const double distance = distances[Position(x,y)];
-        if (distance < distanceCheeseMin) {
-          distanceCheeseMin = distance;
-        }
-	if (distance < kInfinity - 1) {
+	if (distance >= 1) {
 	  distanceCheesesInverse += (1 / distance);
 	}
       }
     }
   }
-  double score = state.getScore();
-
+  double score = state.getDecayedScore();
   double value =
-    weights_.at(0) * distanceCatMin +
-    weights_.at(1) * distanceCatsInverse +
-    weights_.at(2) * distanceCheeseMin +
-    weights_.at(3) * distanceCheesesInverse * 
+    -weights_.at(1) * distanceCatsInverse +
+    weights_.at(3) * distanceCheesesInverse +
     weights_.at(4) * score;
 
+  if (true) {
+    //cout << "DistanceCatsInverse: " << distanceCatsInverse << endl;
+    // << "DistanceCheesesInverse: " << distanceCheesesInverse << endl
+    //cout << "Score: " << score << endl;
+    //cout << "Value: " << value << endl;
+  }
   return value;
 }
 
