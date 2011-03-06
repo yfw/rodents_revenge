@@ -64,7 +64,7 @@ vector<Action> GameState::getMouseActions() const {
   const Position from = getMousePosition();
   for (int dy = -1; dy <= 1; dy++) {
     for (int dx = -1; dx <= 1; dx++) {
-      if (dx == dy) {
+      if ((dx == 0) && (dy == 0)) {
 	continue;
       }
       int x = from.x + dx;
@@ -93,7 +93,7 @@ vector<Action> GameState::getCatActions(const int catIdx) const {
   const Position from = getCatPosition(catIdx);
   for (int dy = -1; dy <= 1; dy++) {
     for (int dx = -1; dx <= 1; dx++) {
-      if (dx == dy) {
+      if ((dx == 0) && (dy == 0)) {
 	continue;
       }
       int x = from.x + dx;
