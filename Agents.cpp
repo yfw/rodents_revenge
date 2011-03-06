@@ -9,6 +9,7 @@
 Action MouseAgent::getAction(const GameState& state) const {
   vector<Action> actions = state.getActions(idx_);
   double value;
+<<<<<<< HEAD
   return MouseAgent::alphaBeta(state, 0, &value, -kInfinity, kInfinity);;
 }
 
@@ -18,6 +19,13 @@ Action MouseAgent::alphaBeta(
   double* value,
   double alpha,
   double beta) const {
+=======
+  Action a = MouseAgent::minMax(state, 0, &value);
+  return a;
+}
+
+Action MouseAgent::minMax(const GameState& state, int level, double * value) const {
+>>>>>>> e6c1c34826f54dca246d0d5606d07c05b583cbce
   if (state.wasCheesed() ||
       state.gameOver() ||
       level == (depth * state.getNumAgents())) {
@@ -84,11 +92,33 @@ double MouseAgent::evaluate(const GameState& state) const {
     }
   }
   double score = state.getScore();
+<<<<<<< HEAD
+=======
+
+>>>>>>> e6c1c34826f54dca246d0d5606d07c05b583cbce
   double value =
     minDistanceToCats * weights_.at(0) +
     minDistanceToCats * weights_.at(1) +
     minDistanceToCats * weights_.at(2);
+<<<<<<< HEAD
   return value;
+=======
+  
+  double minDistanceToCheese = kInfinity;
+  for (int y = 0; y < kLevelCols; y++) {
+    for (int x = 0; x < kLevelCols; x++) {
+      if (state.isCheesePosition(x, y)) {
+        const double distance = distances[Position(x,y)];
+        if (distance < minDistanceToCheese) {
+          minDistanceToCheese = distance;
+        }
+      }
+    }
+  }
+  double cheeseInverse = 1 / (minDistanceToCheese + 1);
+
+  return minDistanceToCats + spreadDistanceToCats + cheeseInverse + score;
+>>>>>>> e6c1c34826f54dca246d0d5606d07c05b583cbce
 }
 
 Action KeyboardAgent::getAction(const GameState& state) const {

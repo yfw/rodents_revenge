@@ -25,9 +25,10 @@ bool GameState::load(const string& fileName) {
     for (int x = 0; x < kLevelCols; x++) {
       set(x, y, level[y][x]);
       if (level[y][x] == MOUSE) {
-	agentPositions_.insert(agentPositions_.begin(), Position(x, y));
+        agentPositions_.insert(agentPositions_.begin(),
+            Position(x, y));
       } else if (level[y][x] == CAT) {
-	agentPositions_.push_back(Position(x, y));
+        agentPositions_.push_back(Position(x, y));
       }
     }
   }
@@ -45,6 +46,10 @@ Position GameState::getMousePosition() const {
 Position GameState::getCatPosition(const int catIdx) const {
   assert((catIdx > 0) && (catIdx < agentPositions_.size()));
   return agentPositions_.at(catIdx);
+}
+
+bool GameState::isCheesePosition(const int x, const int y) const {
+  return get(x, y) == CHEESE;
 }
 
 Position GameState::getPosition(const int idx) const {
@@ -66,12 +71,12 @@ vector<Action> GameState::getMouseActions() const {
       int y = from.y + dy;
       Position to = Position(x, y);
       while (get(x, y) == BLOCK) {
-	x += dx;
-	y += dy;
+        x += dx;
+        y += dy;
       }
       if ((get(x, y) == WALL) ||
-	  (get(x, y) == CAT)) {
-	continue;
+          (get(x, y) == CAT)) {
+        continue;
       }
       actions.push_back(Action(from, to));
     }
@@ -95,9 +100,9 @@ vector<Action> GameState::getCatActions(const int catIdx) const {
       int y = from.y + dy;
       Position to = Position(x, y);
       if ((get(x, y) == NOTHING) ||
-	  (get(x, y) == MOUSE) ||
-	  (to == from)) {
-	actions.push_back(Action(from, to));
+          (get(x, y) == MOUSE) ||
+          (to == from)) {
+        actions.push_back(Action(from, to));
       }
     }
   }
@@ -128,26 +133,26 @@ GameState GameState::getNext(const Action& action) const {
       int dx = to.x - from.x;
       int dy = to.y - from.y;
       while (get(x, y) == BLOCK) {
-	x += dx;
-	y += dy;
+        x += dx;
+        y += dy;
       }
       if ((get(x, y) == NOTHING) ||
-	  (get(x, y) == CHEESE)) {
-	next.set(x, y, BLOCK);
+          (get(x, y) == CHEESE)) {
+        next.set(x, y, BLOCK);
       }
     } else if (get(x, y) == CHEESE) {
       next.score_ += 2;
     }
     for (int i = 1; i < agentPositions_.size(); i++) {
       if (getActions(i).size() > 1) {
-	cheesed = false;
-	break;
+        cheesed = false;
+        break;
       }
     }
     if (cheesed) {
       for (int i = 1; i < agentPositions_.size(); i++) {
-	next.set(agentPositions_[i], CHEESE);
-	next.score_ += 1;
+        next.set(agentPositions_[i], CHEESE);
+        next.score_ += 1;
       }
     }
     next.time_++;
@@ -169,12 +174,12 @@ GameState GameState::getNext(const Action& action) const {
     for (int i = 1; i < next.agentPositions_.size(); i++) {
       vector<Position> spawnPoints;
       for (int y = 0; y < kLevelCols; y++) {
-	for (int x = 0; x < kLevelRows; x++) {
-	  if ((next.get(x, y) == NOTHING) && 
-	      (abs(x - to.x) + abs(y - to.y)) > 4) {
-	    spawnPoints.push_back(Position(x, y));
-	  }
-	}
+        for (int x = 0; x < kLevelRows; x++) {
+          if ((next.get(x, y) == NOTHING) && 
+              (abs(x - to.x) + abs(y - to.y)) > 4) {
+            spawnPoints.push_back(Position(x, y));
+          }
+        }
       }
       random_shuffle(spawnPoints.begin(), spawnPoints.end());
       next.setAgent(spawnPoints.at(0), i);
@@ -223,7 +228,7 @@ void GameState::printAgent(const int idx) const {
 
 void GameState::set(const int x, const int y, const ObjType t) {
   assert((x >= 0) && (x < kLevelRows) &&
-	 (y >= 0) && (y < kLevelCols));
+      (y >= 0) && (y < kLevelCols));
   grid_.at(y * kLevelCols + x) = t;
 }
 
@@ -238,6 +243,6 @@ void GameState::setAgent(const Position& position, const int idx) {
 
 ObjType GameState::get(const int x, const int y) const {
   assert((x >= 0) && (x < kLevelRows) &&
-	 (y >= 0) && (y < kLevelCols));
+      (y >= 0) && (y < kLevelCols));
   return grid_.at(y * kLevelCols + x);
 }
