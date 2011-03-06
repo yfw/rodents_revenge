@@ -7,11 +7,12 @@
 #include "Constants.h"
 
 Action MouseAgent::getAction(const GameState& state) const {
+  //cout << "Value " << MouseAgent::evaluate(state) << endl;
+  ///exit(0);
   vector<Action> actions = state.getActions(idx_);
   Action bestAction;
   double value = MouseAgent::alphaBeta(state, 0, -kInfinity, kInfinity, &bestAction);
-  cout << "Value: " << value << endl;
-  cout << "Action: " << bestAction.to.x << ", " << bestAction.to.y << endl;
+  //cout << "Action: " << bestAction.to.x << ", " << bestAction.to.y << endl;
   return bestAction;
 }
 
@@ -20,7 +21,7 @@ double MouseAgent::alphaBeta(
   int level,
   double alpha,
   double beta,
-  Action* bestActionPtr) const {
+  Action* actionPtr) const {
 
   if (state.wasCheesed() ||
       state.gameOver() ||
@@ -35,14 +36,19 @@ double MouseAgent::alphaBeta(
     ? state.getActions(agentIndex)
     : vector<Action>(1, cats_[agentIndex - 1].getAction(state));
 
-  Action bestAction;
+  vector<Action> bestActions;
   for (int i = 0; i < actions.size(); i++) {
     GameState successor = state.getNext(actions[i]);
-    double nextV = alphaBeta(successor, level + 1, alpha, beta, bestActionPtr);
+    double nextV = alphaBeta(successor, level + 1, alpha, beta, actionPtr);
     if (isMax) {
       if (value < nextV) {
-	bestAction = actions[i];
+	if (level == 0) {
+	  bestActions.clear();
+	  bestActions.push_back(actions[i]);
+	}
 	value = nextV;
+      } else if ((value == nextV) && (level == 0)) {
+	bestActions.push_back(actions[i]);
       }
       if (value >= beta) {
 	break;
@@ -50,8 +56,13 @@ double MouseAgent::alphaBeta(
       alpha = max(alpha, value);
     } else {
       if (value > nextV) {
-	bestAction = actions[i];
+	if (level == 0) {
+	  bestActions.clear();
+	  bestActions.push_back(actions[i]);
+	}
 	value = nextV;
+      } else if ((value == nextV) && (level == 0)) {
+	bestActions.push_back(actions[i]);
       }
       if (value <= alpha) {
 	break;
@@ -59,37 +70,41 @@ double MouseAgent::alphaBeta(
       beta = min(beta, value);
     }
   }
-
   if (level == 0) {
-    *bestActionPtr = bestAction;
+    *actionPtr = bestActions.at(rand() % bestActions.size());
   }
-
   return value;
 }
 
 
 double MouseAgent::evaluate(const GameState& state) const {
-  map<Position, double> distances;
-  Utils::shortestDistances(state.getMousePosition(), state, &distances);
+  map<Position, double> mouseDistances;
+  Utils::shortestDistances(state.getMousePosition(), state, &mouseDistances);
+
+  if (state.wasCheesed()) {
+    return 1000;
+  }
 
   double distanceCatsInverse = 0;
+  double freedomScoreCats = 0;
   for (int i = 1; i <= state.getNumAgents() - 1; i++) {
     const Position& catPosition = state.getCatPosition(i);
-    const double distance = Utils::mapGetDefault(distances,
+    const double distance = Utils::mapGetDefault(mouseDistances,
 						 catPosition,
 						 kInfinity);
-    if (distance > 0) {
+    if (distance >= 1) {
       distanceCatsInverse += (1 / distance);
     } else {
-      return -kInfinity;
+      return -10000;
     }
+    freedomScoreCats += Utils::freedomScore(catPosition, state, 4);
   }
 
   double distanceCheesesInverse = 0;
   for (int y = 0; y < kLevelCols; y++) {
     for (int x = 0; x < kLevelCols; x++) {
       if (state.isCheesePosition(x, y)) {
-	const double distance = Utils::mapGetDefault(distances,
+	const double distance = Utils::mapGetDefault(mouseDistances,
 						     Position(x, y),
 						     kInfinity);
 	if (distance >= 1) {
@@ -101,13 +116,14 @@ double MouseAgent::evaluate(const GameState& state) const {
 
   double score = state.getDecayedScore();
   double value =
-    -weights_.at(1) * distanceCatsInverse +
-    weights_.at(2) * distanceCheesesInverse +
-    weights_.at(3) * score;
+    //-weights_.at(1) * distanceCatsInverse +
+    //weights_.at(2) * distanceCheesesInverse +
+    //weights_.at(3) * score +
+    -weights_.at(4) * freedomScoreCats;
 
   if (true) {
-    //cout << "Score: " << score << endl;
-    //cout << "Value: " << value << endl;
+    //cerr << "Score: " << score << endl;
+    //cerr << "Value: " << value << endl;
   }
 
   return value;

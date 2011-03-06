@@ -18,13 +18,15 @@ double Utils::manhattanDistance(const Position& a,
 void Utils::shortestDistances(
   const Position& position,
   const GameState& state,
-  map<Position, double>* distancesPtr) {
+  map<Position, double>* distancesPtr,
+  const int cutoff) {
 
   queue<pair<Position, double> > Q;
   set<Position> visited;
   Q.push(make_pair(position, 0));
+  (*distancesPtr)[position] = 0;
   visited.insert(position);
-  while (!Q.empty()) {
+  while (!Q.empty() && (visited.size() < cutoff)) {
     pair<Position, double> front = Q.front();
     const Position& node = front.first;
     const double distance = front.second;
@@ -48,20 +50,23 @@ void Utils::shortestDistances(
   }
 }
 
-static double freedomScore(
+double Utils::freedomScore(
   const Position& position,
   const GameState& state,
+  const int peakDistance,
   const int cutoff) {
 
   queue<pair<Position, double> > Q;
   set<Position> visited;
+  vector<double> visitedDistances;
   Q.push(make_pair(position, 0));
   visited.insert(position);
-  while (!Q.empty()) {
+  while (!Q.empty() && (visited.size() < cutoff)) {
     pair<Position, double> front = Q.front();
     const Position& node = front.first;
     const double distance = front.second;
     Q.pop();
+    visitedDistances.push_back(distance);
     for (int dy = -1; dy <= 1; dy++) {
       for (int dx = -1; dx <= 1; dx++) {
 	ObjType type = state.get(node.x + dx, node.y + dy);
@@ -79,7 +84,19 @@ static double freedomScore(
     }
   }
 
-  return Q.size();
+  double score = 0;
+  for (int i = 0; i < visitedDistances.size(); i++) {
+    double distance = visitedDistances[i];
+    if (distance <= peakDistance) {
+      // score at peakDistance = 1, everywhere else < 1                                    
+      score += distance / peakDistance;
+    } else {
+      // 30 is some arbitrary # where the score at 30-peakDistance would == 0              
+      // We can tune this better                                                           
+      score += (30.0 + peakDistance - distance) / 30.0;
+    }
+  }
+  return score;
 }
 
 double Utils::mapGetDefault(

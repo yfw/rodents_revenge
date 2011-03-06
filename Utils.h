@@ -13,12 +13,14 @@ class Utils {
   static void shortestDistances(
     const Position& position,
     const GameState& state,
-    map<Position, double>* distancesPtr);
+    map<Position, double>* distancesPtr,
+    const int cutoff = 1000000);
 
   static double freedomScore(
     const Position& position,
     const GameState& state,
-    const int cutoff);
+    const int peakDistance,
+    const int cutoff = 83);
 
   static double mapGetDefault(
     const map<Position, double>& m,

@@ -39,7 +39,7 @@ class MouseAgent : public Agent {
 		   int level,
 		   double alpha,
 		   double beta,
-		   Action* bestAction) const;
+		   Action* actionPtr) const;
 
   vector<double> weights_;
   vector<CatAgent> cats_;
