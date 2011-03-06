@@ -58,8 +58,24 @@ double MouseAgent::evaluate(const GameState& state) {
     }
   }
   double score = state.getScore();
-  return minDistanceToCats + spreadDistanceToCats;
+  double minDistanceToCheese = kInfinity;
+
+  for (int y = 0; y < kLevelCols; y++) {
+    for (int x = 0; x < kLevelCols; x++) {
+      if (state.isCheesePosition(x, y)) {
+        const double distance = distances[Position(x,y)];
+        if (distance < minDistanceToCheese) {
+          minDistanceToCheese = distance;
+        }
+      }
+    }
+  }
+  double cheeseInverse = 1 / (minDistanceToCheese + 1);
+
+  return minDistanceToCats + spreadDistanceToCats + cheeseInverse + score;
 }
+
+
 
 Action KeyboardAgent::getAction(const GameState& state) {
   string input;

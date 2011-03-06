@@ -3,6 +3,7 @@
 #define GAMESTATE_H
 
 #include <vector>
+#include <list>
 #include "Constants.h"
 
 using namespace std;
@@ -56,6 +57,7 @@ class GameState {
   vector<Action> getActions(const int idx) const;
   vector<Action> getMouseActions() const;
   vector<Action> getCatActions(const int catIdx) const;
+  bool isCheesePosition(const int x, const int y) const;
 
   GameState getNext(const Action& action) const;
   ObjType get(const int x, const int y) const;
