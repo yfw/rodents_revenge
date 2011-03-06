@@ -26,13 +26,23 @@ class CatAgent : public Agent {
 
 class MouseAgent : public Agent {
  public:
-  MouseAgent(const vector<double>& weights)
+  MouseAgent(const vector<double>& weights,
+	     const vector<CatAgent>& cats)
     : Agent(0),
-      weights_(weights) {}
+      weights_(weights),
+      cats_(cats) {}
   Action getAction(const GameState& state) const;
+ protected:
   double evaluate(const GameState& state) const;
- private:
+  Action alphaBeta(const GameState& state,
+		   int level,
+		   double* value,
+		   double alpha,
+		   double beta) const;
+
   vector<double> weights_;
+  vector<CatAgent> cats_;
+  static const int depth = 3;
 };
 
 class KeyboardAgent : public Agent {

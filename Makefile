@@ -4,7 +4,7 @@ DEBUG = -g
 CFLAGS = -Wall -I/opt/local/include/ -c ${DEBUG}
 LFLAGS = -Wall -I/opt/local/include/ ${DEBUG}
 
-rr: $(OBJS) main.cpp Constants.h Agents.h Gamestate.h
+rr: $(OBJS) main.cpp
 	${CC} ${LFLAGS} ${OBJS} -o rr main.cpp
 
 clean:

@@ -54,14 +54,14 @@ class GameState {
   Position getMousePosition() const;
   Position getCatPosition(const int catIdx) const;
   vector<Action> getActions(const int idx) const;
-  vector<Action> getMouseActions() const;
-  vector<Action> getCatActions(const int catIdx) const;
 
   GameState getNext(const Action& action) const;
   ObjType get(const int x, const int y) const;
 
  private:
   Position getPosition(const int idx) const;
+  vector<Action> getMouseActions() const;
+  vector<Action> getCatActions(const int catIdx) const;
 
   void set(const int x, const int y, const ObjType t);
   void set(const Position& pos, const ObjType t);

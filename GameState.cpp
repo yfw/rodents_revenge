@@ -59,6 +59,9 @@ vector<Action> GameState::getMouseActions() const {
   const Position from = getMousePosition();
   for (int dy = -1; dy <= 1; dy++) {
     for (int dx = -1; dx <= 1; dx++) {
+      if (dx == dy) {
+	continue;
+      }
       int x = from.x + dx;
       int y = from.y + dy;
       Position to = Position(x, y);
@@ -73,7 +76,9 @@ vector<Action> GameState::getMouseActions() const {
       actions.push_back(Action(from, to));
     }
   }
-
+  if (actions.size() == 0) {
+    actions.push_back(Action(from, from));
+  }
   return actions;
 }
 
@@ -83,6 +88,9 @@ vector<Action> GameState::getCatActions(const int catIdx) const {
   const Position from = getCatPosition(catIdx);
   for (int dy = -1; dy <= 1; dy++) {
     for (int dx = -1; dx <= 1; dx++) {
+      if (dx == dy) {
+	continue;
+      }
       int x = from.x + dx;
       int y = from.y + dy;
       Position to = Position(x, y);
@@ -92,6 +100,9 @@ vector<Action> GameState::getCatActions(const int catIdx) const {
 	actions.push_back(Action(from, to));
       }
     }
+  }
+  if (actions.size() == 0) {
+    actions.push_back(Action(from, from));
   }
   return actions;
 }
@@ -189,7 +200,7 @@ void GameState::print() const {
   cout << "Score: " << score_ << endl;
   cout << "Time: " << time_ << endl;
   for (int i = 0; i < agentPositions_.size(); i++) {
-    //    printAgent(i);
+    printAgent(i);
   }
 }
 

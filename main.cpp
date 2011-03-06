@@ -20,6 +20,7 @@ int run(const GameState& state,
       g = g.getNext(cats[g.getTurn() - 1].getAction(g));
     }
   }
+  system("clear");
   g.print();
   return g.getScore();
 }
@@ -36,7 +37,7 @@ int main(int argc, char* argv[]) {
   weights.push_back(1);
   weights.push_back(1);
   weights.push_back(1);
-  MouseAgent mouse(weights);
+  MouseAgent mouse(weights, cats);
   run(g, mouse, cats);
 
   return 0;
