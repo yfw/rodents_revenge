@@ -39,10 +39,13 @@ void Utils::shortestDistances(
   Q.push(make_pair(position, 0));
   (*distancesPtr)[position] = 0;
   visited.insert(position);
-  while (!Q.empty() && (visited.size() < cutoff)) {
+  while (!Q.empty()) {
     pair<Position, double> front = Q.front();
     const Position& node = front.first;
     const double distance = front.second;
+    if (distance > cutoff) {
+      break;
+    }
     (*distancesPtr)[node] = distance;
     Q.pop();
     for (int dy = -1; dy <= 1; dy++) {
@@ -86,10 +89,13 @@ double Utils::freedomScore(
   vector<double> visitedDistances;
   Q.push(make_pair(position, 0));
   visited.insert(position);
-  while (!Q.empty() && (visited.size() < cutoff)) {
+  while (!Q.empty()) {
     pair<Position, double> front = Q.front();
     const Position& node = front.first;
     const double distance = front.second;
+    if (distance > cutoff) {
+      break;
+    }
     Q.pop();
     visitedDistances.push_back(distance);
     for (int dy = -1; dy <= 1; dy++) {
@@ -112,6 +118,9 @@ double Utils::freedomScore(
   double score = 0;
   for (int i = 0; i < visitedDistances.size(); i++) {
     double distance = visitedDistances[i];
+    score += 1;
+    continue;
+
     if (distance <= peakDistance) {
       score += 1;
     } else if ((distance - peakDistance) <= 10) {

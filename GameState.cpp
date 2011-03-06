@@ -146,7 +146,7 @@ GameState GameState::getNext(const Action& action) const {
   assert(find(actions.begin(), actions.end(), action) != actions.end());
   const Position& to = action.to;
   const Position& from = action.from;
-  bool cheesed = true;
+  bool cheesed = false;
   next.time_++;
   next.turnIdx_ = ((turnIdx_ + 1) % agentPositions_.size());
 
@@ -165,22 +165,15 @@ GameState GameState::getNext(const Action& action) const {
         next.set(x, y, BLOCK);
       }
     } else if (get(x, y) == CHEESE) {
-      next.score_ += 2;
-      next.decayedScore_ += (2 * pow(0.99, next.time_));
+      next.score_ += kScoreEatCheese;
+      next.decayedScore_ += (kScoreEatCheese * pow(0.999, next.time_));
     }
     for (int i = 1; i < agentPositions_.size(); i++) {
-      //vector<Action> catActions = getActions(i);
-      //if ((catActions.size() > 1) || !(catActions[0] == Action(getPosition(i), getPosition(i)))) {
-      if (!isCatStuck(i)) {
-	cheesed = false;
-        break;
-      }
-    }
-    if (cheesed) {
-      for (int i = 1; i < agentPositions_.size(); i++) {
+      if (isCatStuck(i)) {
         next.set(agentPositions_[i], CHEESE);
-        next.score_ += 1;
-	next.decayedScore_ += (1 * pow(0.99, next.time_));
+        next.score_ += kScoreTrapCat;
+	next.decayedScore_ += (kScoreTrapCat * pow(0.999, next.time_));
+	cheesed = true;
       }
     }
   } else {
@@ -198,17 +191,18 @@ GameState GameState::getNext(const Action& action) const {
 
   if (cheesed) {
     for (int i = 1; i < next.agentPositions_.size(); i++) {
-      vector<Position> spawnPoints;
-      for (int y = 0; y < kLevelCols; y++) {
-        for (int x = 0; x < kLevelRows; x++) {
-          if ((next.get(x, y) == NOTHING) && 
-              (abs(x - to.x) + abs(y - to.y)) > 4) {
-            spawnPoints.push_back(Position(x, y));
-          }
-        }
+      if (isCatStuck(i)) {
+	vector<Position> spawnPoints;
+	for (int y = 0; y < kLevelCols; y++) {
+	  for (int x = 0; x < kLevelRows; x++) {
+	    if ((next.get(x, y) == NOTHING) && 
+		(abs(x - to.x) + abs(y - to.y)) > 4) {
+	      spawnPoints.push_back(Position(x, y));
+	    }
+	  }
+	}
+	next.setAgent(spawnPoints.at(rand() % spawnPoints.size()), i);
       }
-      random_shuffle(spawnPoints.begin(), spawnPoints.end());
-      next.setAgent(spawnPoints.at(0), i);
     }
   }
 

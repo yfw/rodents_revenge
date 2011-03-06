@@ -22,13 +22,13 @@ class Utils {
     const Position& position,
     const GameState& state,
     hash_map<Position, double, PositionHash>* distancesPtr,
-    const int cutoff = 1000000);
+    const int cutoff = 1000);
 
   static double freedomScore(
     const Position& position,
     const GameState& state,
     const int peakDistance,
-    const int cutoff = 100000);
+    const int cutoff = 1000);
 
   static double mapGetDefault(
     const hash_map<Position, double, PositionHash>& m,			      

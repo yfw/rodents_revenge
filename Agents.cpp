@@ -12,6 +12,7 @@ Action MouseAgent::getAction(const GameState& state) const {
   vector<Action> actions = state.getActions(idx_);
   Action bestAction;
   double value = MouseAgent::alphaBeta(state, 0, -kInfinity, kInfinity, &bestAction);
+  cout << "Value: " << evaluate(state);
   //cout << "Action: " << bestAction.to.x << ", " << bestAction.to.y << endl;
   //exit(0);
   return bestAction;
@@ -79,23 +80,23 @@ double MouseAgent::alphaBeta(
 
 
 double MouseAgent::evaluate(const GameState& state) const {
-  hash_map<Position, double, PositionHash> mouseDistances;
-  Utils::shortestDistances(state.getMousePosition(), state, &mouseDistances);
-
-  if (state.wasCheesed()) {
-    return 10000;
-  }
+  hash_map<Position, double, PositionHash> distances;
+  Utils::shortestDistances(state.getMousePosition(), state, &distances);
 
   if (state.gameOver()) {
-    return -1000;
+    return -100000;
+  }
+
+  if (state.wasCheesed()) {
+    return 100000;
   }
 
   double distanceCatsInverse = 0;
   double freedomScoreCats = 0;
-  double minManhattanDistanceCats = 100;
+  double manhattanDistanceNearestCat = 100;
   for (int i = 1; i <= state.getNumAgents() - 1; i++) {
     const Position& catPosition = state.getCatPosition(i);
-    const double distance = Utils::mapGetDefault(mouseDistances,
+    const double distance = Utils::mapGetDefault(distances,
 						 catPosition,
 						 kInfinity);
     const double manhattanDistance =
@@ -107,8 +108,8 @@ double MouseAgent::evaluate(const GameState& state) const {
     }
 
     if (!state.isCatStuck(i) &&
-	(manhattanDistance < minManhattanDistanceCats)) {
-      minManhattanDistanceCats = manhattanDistance;
+	(manhattanDistance < manhattanDistanceNearestCat)) {
+      manhattanDistanceNearestCat = manhattanDistance;
     }
 
     freedomScoreCats += Utils::freedomScore(catPosition, state, 6);
@@ -118,7 +119,7 @@ double MouseAgent::evaluate(const GameState& state) const {
   for (int y = 0; y < kLevelCols; y++) {
     for (int x = 0; x < kLevelCols; x++) {
       if (state.isCheesePosition(x, y)) {
-	const double distance = Utils::mapGetDefault(mouseDistances,
+	const double distance = Utils::mapGetDefault(distances,
 						     Position(x, y),
 						     kInfinity);
 	if (distance >= 1) {
@@ -130,15 +131,15 @@ double MouseAgent::evaluate(const GameState& state) const {
 
   double score = state.getDecayedScore();
   double value =
-    -weights_.at(1) * distanceCatsInverse * 10 +
-    -weights_.at(2) * minManhattanDistanceCats * 0.001 +
-     weights_.at(3) * distanceCheesesInverse +
-     weights_.at(4) * score +
-    -weights_.at(5) * freedomScoreCats * 10;
+    -weights_.at(0) * distanceCatsInverse * 2 +
+    //-weights_.at(1) * manhattanDistanceNearestCat * 0.001 +
+    -weights_.at(2) * freedomScoreCats +
+    weights_.at(3) * distanceCheesesInverse * 5 +
+    weights_.at(4) * score * 50;
 
   if (true) {
     //cerr << "Score: " << score << endl;
-    //cerr << "Value: " << minManhattanDistanceCats << endl;
+    //cerr << "Value: " << manhattanDistanceNearestCat << endl;
   }
 
   return value;
