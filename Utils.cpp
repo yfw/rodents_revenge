@@ -75,7 +75,7 @@ int Utils::catFreedomScore(const Position& position,
   int scoreFromHere = 1;
   for (int dy = -1; dy <= 1; dy++) {
     for (int dx = -1; dx <= 1; dx++) {
-      if (dx == dy) {
+      if (dx == 0 && dy == 0) {
         continue;
       }
 
@@ -84,6 +84,8 @@ int Utils::catFreedomScore(const Position& position,
       if (state.isCatPosition(x, y)) {
         continue;
       }
+      cout << "(" << x << ", " << y << ") \n";
+      
 
       Position neighbor = Position(x, y);
       visited.insert(position);
