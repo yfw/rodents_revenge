@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "GameState.h"
 #include "Agents.h"
+#include <time.h>
 
 using namespace std;
 
@@ -12,16 +13,16 @@ int run(const GameState& state,
 	const vector<CatAgent>& cats) {
   GameState g = state;
   while (!g.gameOver()) {
-    system("clear");
-    g.print();
+    //system("clear");
+    //g.print();
     if (g.getTurn() == 0) {
       g = g.getNext(mouse.getAction(g));
     } else {
       g = g.getNext(cats[g.getTurn() - 1].getAction(g));
     }
   }
-  system("clear");
-  g.print();
+  //system("clear");
+  //g.print();
   return g.getScore();
 }
 
@@ -41,7 +42,9 @@ int main(int argc, char* argv[]) {
   weights.push_back(1);
   weights.push_back(1);
   MouseAgent mouse(weights, cats);
-  run(g, mouse, cats);
 
+  time_t seconds = time(NULL);
+  run(g, mouse, cats);
+  cout << time(NULL) - seconds;
   return 0;
 }

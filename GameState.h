@@ -5,7 +5,6 @@
 #include <vector>
 #include <list>
 #include <ext/hash_set>
-
 #include "Constants.h"
 
 using namespace std;

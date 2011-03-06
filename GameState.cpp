@@ -3,6 +3,7 @@
 #include <iostream>
 #include <math.h>
 #include <assert.h>
+#include <sstream>
 #include "GameState.h"
 
 GameState::GameState() {}
@@ -132,14 +133,11 @@ vector<Action> GameState::getActions(const int idx) const {
 }
 
 string GameState::getGridStr(const Position& position) const {
-  string gridStr(grid_.size(), ' ');
-  for (int i = 0; i < grid_.size(); i++) {
-    if ((grid_[i] == BLOCK) ||
-	(grid_[i] == WALL)) {
-      gridStr[i] = grid_[i];
-    }
-  }
-  return gridStr;
+  stringstream out;
+  string gridStr;
+  gridStr.insert(gridStr.begin(), grid_.begin(), grid_.end());
+  out << gridStr << position.x << ":" << position.y;
+  return out.str();
 }
 
 GameState GameState::getNext(const Action& action) const {

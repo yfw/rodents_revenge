@@ -13,6 +13,7 @@
 using namespace std;
 
 typedef hash_map<string, hash_map<Position, double, PositionHash>, StringHash> cache_map;
+const int kCacheSize = 50000;
 
 double Utils::manhattanDistance(const Position& a,
 				const Position& b) {
@@ -61,10 +62,10 @@ void Utils::shortestDistances(
     }
   }
 
-  if (cache.size() > 50000) {
+  if (cache.size() > kCacheSize) {
     cache.clear();
   }
-  //cache[gridStr] = *distancesPtr;
+  cache[gridStr] = *distancesPtr;
 }
 
 double Utils::freedomScore(
@@ -76,9 +77,9 @@ double Utils::freedomScore(
   static hash_map<string, double, StringHash> cache;
   const string gridStr = state.getGridStr(position);
   hash_map<string, double, StringHash>::const_iterator it = cache.find(gridStr);
-  //if (it != cache.end()) {
-  //return it->second;
-  //}
+  if (it != cache.end()) {
+    return it->second;
+  }
 
   queue<pair<Position, double> > Q;
   hash_set<Position, PositionHash> visited;
@@ -118,13 +119,7 @@ double Utils::freedomScore(
     }
   }
 
-  if (it != cache.end()) {
-    //cout << score << ", " << it->second;
-    //assert(score == it->second);
-    //return it->second;
-  }
-
-  if (cache.size() > 50000) {
+  if (cache.size() > kCacheSize) {
     cache.clear();
   }
   cache[gridStr] = score;
