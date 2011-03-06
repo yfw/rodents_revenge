@@ -144,6 +144,7 @@ GameState GameState::getNext(const Action& action) const {
         next.score_ += 1;
       }
     }
+    next.time_++;
   } else {
     int x = to.x;
     int y = to.y;
@@ -155,7 +156,6 @@ GameState GameState::getNext(const Action& action) const {
 
   next.set(from, NOTHING);
   next.setAgent(to, turnIdx_);
-  next.time_++;
   next.turnIdx_ = ((turnIdx_ + 1) % agentPositions_.size());
   next.wasCheesed_ = cheesed;
 
@@ -194,7 +194,7 @@ void GameState::print() const {
   cout << "Score: " << score_ << endl;
   cout << "Time: " << time_ << endl;
   for (int i = 0; i < agentPositions_.size(); i++) {
-    //    printAgent(i);
+    printAgent(i);
   }
 }
 

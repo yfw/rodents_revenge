@@ -4,11 +4,11 @@ DEBUG = -g
 CFLAGS = -Wall -I/opt/local/include/ -c ${DEBUG}
 LFLAGS = -Wall -I/opt/local/include/ ${DEBUG}
 
-rr: $(OBJS) main.cpp Constants.h
+rr: $(OBJS) main.cpp Constants.h Agents.h Gamestate.h
 	${CC} ${LFLAGS} ${OBJS} -o rr main.cpp
 
 clean:
 	rm *.o *~ *.gch rr
 
 run: rr
-	./rr Levels/test
+	./rr Levels/default
