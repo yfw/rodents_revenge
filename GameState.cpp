@@ -25,8 +25,7 @@ bool GameState::load(const string& fileName) {
     for (int x = 0; x < kLevelCols; x++) {
       set(x, y, level[y][x]);
       if (level[y][x] == MOUSE) {
-	agentPositions_.insert(agentPositions_.begin(),
-			       Position(x, y));
+	agentPositions_.insert(agentPositions_.begin(), Position(x, y));
       } else if (level[y][x] == CAT) {
 	agentPositions_.push_back(Position(x, y));
       }
@@ -140,6 +139,7 @@ GameState GameState::getNext(const Action& action) const {
 	next.score_ += 1;
       }
     }
+    next.time_++;
   } else {
     int x = to.x;
     int y = to.y;
@@ -151,7 +151,6 @@ GameState GameState::getNext(const Action& action) const {
 
   next.set(from, NOTHING);
   next.setAgent(to, turnIdx_);
-  next.time_++;
   next.turnIdx_ = ((turnIdx_ + 1) % agentPositions_.size());
   next.wasCheesed_ = cheesed;
 

@@ -11,7 +11,7 @@ using namespace std;
 class Agent {
  public:
   Agent(const int idx) : idx_(idx) {}
-  virtual Action getAction(const GameState& state) = 0;
+  virtual Action getAction(const GameState& state) const = 0;
 
  protected:
   int idx_;
@@ -21,20 +21,24 @@ class Agent {
 class CatAgent : public Agent {
  public:
   CatAgent(const int idx) : Agent(idx) {}
-  Action getAction(const GameState& state);
+  Action getAction(const GameState& state) const;
 };
 
 class MouseAgent : public Agent {
  public:
-  MouseAgent(const int idx) : Agent(idx) {}
-  Action getAction(const GameState& state);
-  double evaluate(const GameState& state);
+  MouseAgent(const vector<double>& weights)
+    : Agent(0),
+      weights_(weights) {}
+  Action getAction(const GameState& state) const;
+  double evaluate(const GameState& state) const;
+ private:
+  vector<double> weights_;
 };
 
 class KeyboardAgent : public Agent {
  public:
   KeyboardAgent(const int idx) : Agent(idx) {}
-  Action getAction(const GameState& state);
+  Action getAction(const GameState& state) const;
 };
 
 #endif

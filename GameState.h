@@ -48,7 +48,7 @@ class GameState {
   int getScore() const { return score_; }
   int getTurn() const { return turnIdx_; }
   int getNumAgents() const { return agentPositions_.size(); }
-  bool gameOver() const { return gameOver_; }
+  bool gameOver() const { return (gameOver_ || time_ > kMaxTime); }
   bool wasCheesed() const { return wasCheesed_; }
 
   Position getMousePosition() const;
@@ -71,9 +71,9 @@ class GameState {
 
   vector<ObjType> grid_;
   vector<Position> agentPositions_;
-  int64_t score_;
-  int64_t turnIdx_;
-  int64_t time_;
+  int score_;
+  int turnIdx_;
+  int time_;
   bool gameOver_;
   bool wasCheesed_;
 };

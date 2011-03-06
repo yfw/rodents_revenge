@@ -1,4 +1,3 @@
-
 #include <algorithm>
 #include <iostream>
 #include <map>
@@ -7,25 +6,11 @@
 #include "Utils.h"
 #include "Constants.h"
 
-Action CatAgent::getAction(const GameState& state) {
-  const vector<Action> actions = state.getActions(idx_);
-  const Position& mousePosition = state.getMousePosition();
-  Action minDistAction;
-  double minDist = kInfinity;
-  for (int i = 0; i < actions.size(); i++) {
-    double dist = Utils::manhattanDistance(actions[i].to, mousePosition);
-    if (dist < minDist) {
-      minDist = dist;
-      minDistAction = actions[i];
-    }
-  }
-  return minDistAction;
-}
-
-Action MouseAgent::getAction(const GameState& state) {
+Action MouseAgent::getAction(const GameState& state) const {
   const vector<Action> actions = state.getActions(idx_);
   vector<Action> maxActions;
   double maxScore = -kInfinity;
+
   for (int i = 0; i < actions.size(); i++) {
     const GameState next = state.getNext(actions[i]);
     double score = evaluate(next);
@@ -41,7 +26,7 @@ Action MouseAgent::getAction(const GameState& state) {
   return maxActions[0];
 }
 
-double MouseAgent::evaluate(const GameState& state) {
+double MouseAgent::evaluate(const GameState& state) const {
   map<Position, double> distances;
   Utils::mazeDistances(state.getMousePosition(), state, distances);
 
@@ -51,17 +36,22 @@ double MouseAgent::evaluate(const GameState& state) {
     const Position& catPosition = state.getCatPosition(i);
     const double distance = distances[catPosition];
     if (distance < minDistanceToCats) {
-      minDistanceToCats = distance;
+       minDistanceToCats = distance;
     }
     if (distance < kInfinity - 1) {
       spreadDistanceToCats += (1 / distance);
     }
   }
   double score = state.getScore();
-  return minDistanceToCats + spreadDistanceToCats;
+  double value =
+    minDistanceToCats * weights_.at(0) +
+    minDistanceToCats * weights_.at(1) +
+    minDistanceToCats * weights_.at(2);
+
+  return minDistanceToCats + spreadDistanceToCats + score;
 }
 
-Action KeyboardAgent::getAction(const GameState& state) {
+Action KeyboardAgent::getAction(const GameState& state) const {
   string input;
   bool valid = false;
 
@@ -97,4 +87,19 @@ Action KeyboardAgent::getAction(const GameState& state) {
       return actions[i];
     }
   }
+}
+
+Action CatAgent::getAction(const GameState& state) const {
+  const vector<Action> actions = state.getActions(idx_);
+  const Position& mousePosition = state.getMousePosition();
+  Action minDistAction;
+  double minDist = kInfinity;
+  for (int i = 0; i < actions.size(); i++) {
+    double dist = Utils::manhattanDistance(actions[i].to, mousePosition);
+    if (dist < minDist) {
+      minDist = dist;
+      minDistAction = actions[i];
+    }
+  }
+  return minDistAction;
 }
