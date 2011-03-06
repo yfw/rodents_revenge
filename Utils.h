@@ -2,8 +2,16 @@
 #define UTILS_H
 
 #include <math.h>
-#include <set>
+#include <ext/hash_map>
 #include "GameState.h"
+
+using namespace __gnu_cxx;
+
+struct StringHash {
+  size_t operator()(const string& x) const {
+    return hash<const char*>()(x.c_str());
+  }
+};
 
 class Utils {
  public:
@@ -13,7 +21,7 @@ class Utils {
   static void shortestDistances(
     const Position& position,
     const GameState& state,
-    map<Position, double>* distancesPtr,
+    hash_map<Position, double, PositionHash>* distancesPtr,
     const int cutoff = 1000000);
 
   static double freedomScore(
@@ -23,7 +31,7 @@ class Utils {
     const int cutoff = 100000);
 
   static double mapGetDefault(
-    const map<Position, double>& m,
+    const hash_map<Position, double, PositionHash>& m,			      
     const Position& key,
     const double defaultValue);
 };

@@ -77,7 +77,7 @@ vector<Action> GameState::getMouseActions() const {
   for (int dy = -1; dy <= 1; dy++) {
     for (int dx = -1; dx <= 1; dx++) {
       if ((dx == 0) && (dy == 0)) {
-	continue;
+	//continue;
       }
       int x = from.x + dx;
       int y = from.y + dy;
@@ -129,6 +129,17 @@ vector<Action> GameState::getActions(const int idx) const {
     return getMouseActions();
   }
   return getCatActions(idx);
+}
+
+string GameState::getGridStr(const Position& position) const {
+  string gridStr(grid_.size(), ' ');
+  for (int i = 0; i < grid_.size(); i++) {
+    if ((grid_[i] == BLOCK) ||
+	(grid_[i] == WALL)) {
+      gridStr[i] = grid_[i];
+    }
+  }
+  return gridStr;
 }
 
 GameState GameState::getNext(const Action& action) const {

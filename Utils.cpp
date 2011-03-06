@@ -1,14 +1,18 @@
 
 #include <iostream>
-#include <map>
+#include <ext/hash_set>
+#include <ext/hash_map>
 #include <set>
 #include <queue>
+#include <string>
 
 #include "Utils.h"
 #include "Constants.h"
 #include <assert.h>
 
 using namespace std;
+
+typedef hash_map<string, hash_map<Position, double, PositionHash>, StringHash> cache_map;
 
 double Utils::manhattanDistance(const Position& a,
 				const Position& b) {
@@ -18,11 +22,19 @@ double Utils::manhattanDistance(const Position& a,
 void Utils::shortestDistances(
   const Position& position,
   const GameState& state,
-  map<Position, double>* distancesPtr,
+  hash_map<Position, double, PositionHash>* distancesPtr,
   const int cutoff) {
 
+  static cache_map cache;
+  const string gridStr = state.getGridStr(position);
+  cache_map::const_iterator it = cache.find(gridStr);
+  if (it != cache.end()) {
+    *distancesPtr = hash_map<Position, double, PositionHash>(it->second);
+    return;
+  }
+
   queue<pair<Position, double> > Q;
-  set<Position> visited;
+  hash_set<Position, PositionHash> visited;
   Q.push(make_pair(position, 0));
   (*distancesPtr)[position] = 0;
   visited.insert(position);
@@ -48,6 +60,11 @@ void Utils::shortestDistances(
       }
     }
   }
+
+  if (cache.size() > 50000) {
+    cache.clear();
+  }
+  //cache[gridStr] = *distancesPtr;
 }
 
 double Utils::freedomScore(
@@ -56,8 +73,15 @@ double Utils::freedomScore(
   const int peakDistance,
   const int cutoff) {
 
+  static hash_map<string, double, StringHash> cache;
+  const string gridStr = state.getGridStr(position);
+  hash_map<string, double, StringHash>::const_iterator it = cache.find(gridStr);
+  //if (it != cache.end()) {
+  //return it->second;
+  //}
+
   queue<pair<Position, double> > Q;
-  set<Position> visited;
+  hash_set<Position, PositionHash> visited;
   vector<double> visitedDistances;
   Q.push(make_pair(position, 0));
   visited.insert(position);
@@ -75,7 +99,7 @@ double Utils::freedomScore(
 	    (type == BLOCK)) { 
 	  continue;
 	}
-	Position neighbor(node.x + dx, node.y + dy);
+	const Position neighbor(node.x + dx, node.y + dy);
 	if (!visited.count(neighbor)) {
 	  visited.insert(neighbor);
 	  Q.push(make_pair(neighbor, distance + 1));
@@ -88,20 +112,32 @@ double Utils::freedomScore(
   for (int i = 0; i < visitedDistances.size(); i++) {
     double distance = visitedDistances[i];
     if (distance <= peakDistance) {
-      //score += 0.5 * distance / peakDistance + 0.5;
       score += 1;
     } else if ((distance - peakDistance) <= 10) {
       score += (10 - (distance - peakDistance)) / 20.0;
     }
   }
+
+  if (it != cache.end()) {
+    //cout << score << ", " << it->second;
+    //assert(score == it->second);
+    //return it->second;
+  }
+
+  if (cache.size() > 50000) {
+    cache.clear();
+  }
+  cache[gridStr] = score;
+
   return score;
 }
 
 double Utils::mapGetDefault(
-  const map<Position, double>& m,
+  const hash_map<Position, double, PositionHash>& m,
   const Position& key,
   const double defaultValue) {
 
-  map<Position, double>::const_iterator it = m.find(key);
+  hash_map<Position, double, PositionHash>::const_iterator it = m.find(key);
   return (it == m.end()) ? defaultValue : it->second;
 }
+
