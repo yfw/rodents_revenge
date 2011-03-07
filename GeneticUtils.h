@@ -18,6 +18,7 @@ class GeneticUtils {
   static double unifRand();
   static double unifRand(double a, double b);
   static double getNoise(double noiseSize, int populationIndex);
+  static double getNoise(double noiseSize);
 };
 
 #endif

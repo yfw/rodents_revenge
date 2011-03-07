@@ -51,10 +51,11 @@ int run(GameState state,
 int main(int argc, char* argv[]) {
   assert(argc >= 2);
   string map = argv[1];
+
+  vector<double> weights(kInitialWeights, kInitialWeights + sizeof(kInitialWeights) / sizeof(double));
   if (argc == 3) {
     string flag = argv[2];
     if (flag == "--weights") {
-      vector<double> weights;
       GeneticUtils::getWeights(weights, map);
       cout << "overall best weights" << endl;
       for (unsigned int i = 0; i < weights.size(); i++) {
@@ -69,11 +70,8 @@ int main(int argc, char* argv[]) {
     for (int i = 1; i < g.getNumAgents(); i++) {
       cats.push_back(CatAgent(i));
     }
-    vector<double> weights(kInitialWeights, kInitialWeights + sizeof(kInitialWeights) / sizeof(double));
     MouseAgent mouse(weights, cats);
     run(g, mouse, cats);
-    return 0;
   }
-
   return 0;
 }
