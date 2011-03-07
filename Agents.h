@@ -42,7 +42,6 @@ class MouseAgent : public Agent {
 
   vector<double> weights_;
   vector<CatAgent> cats_;
-  static const int depth = 3;
 };
 
 class KeyboardAgent : public Agent {

@@ -25,7 +25,7 @@ double MouseAgent::alphaBeta(
   Action* actionPtr) const {
 
   if (state.gameOver() ||
-      level == (depth * state.getNumAgents())) {
+      level == (kAlphaBetaDepth * state.getNumAgents())) {
     return evaluate(state);
   }
 
@@ -136,12 +136,12 @@ double MouseAgent::evaluate(const GameState& state) const {
   double score = state.getDecayedScore();
   double blocksMoved = state.getNumBlocksMoved();
   double value =
-    -weights_.at(0) * distanceCatsInverse * 30 +
-    -weights_.at(1) * manhattanDistanceNearestCat * 0.1 +
-    -weights_.at(2) * freedomScoreCats +
-    weights_.at(3) * distanceCheesesInverse * 5 +
-    weights_.at(4) * score * 100 +
-    weights_.at(5) * blocksMoved * 0.01;
+    weights_.at(0) * distanceCatsInverse +
+    weights_.at(1) * manhattanDistanceNearestCat +
+    weights_.at(2) * freedomScoreCats +
+    weights_.at(3) * distanceCheesesInverse +
+    weights_.at(4) * score +
+    weights_.at(5) * blocksMoved;
 
   return value;
 }

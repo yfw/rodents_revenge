@@ -17,5 +17,7 @@ static const ObjType MOUSE = 'M';
 static const ObjType CAT = 'C';
 static const ObjType CHEESE = 'H';
 static const int kCats = 2;
+static const double kInitialWeights[] = {-30, -0.1, -1, 5, 100, 0.1};
+static const int kAlphaBetaDepth = 3;
 
 #endif
