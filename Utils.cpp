@@ -17,7 +17,7 @@ const int kCacheSize = 50000;
 
 double Utils::manhattanDistance(const Position& a,
 				const Position& b) {
-  return abs(a.x - b.x) + abs(a.y - b.y);
+  return max(abs(a.x - b.x), abs(a.y - b.y));
 }
 
 void Utils::shortestDistances(

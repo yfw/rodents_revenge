@@ -4,7 +4,7 @@
 
 static const int kLevelRows = 23;
 static const int kLevelCols = 23;
-static const int kMaxTime = 500;
+static const int kMaxTime = 5000;
 static const double kInfinity = 10000000;
 static const int kScoreEatCheese = 5;
 static const int kScoreTrapCat = 1;

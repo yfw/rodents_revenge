@@ -12,7 +12,7 @@ Action MouseAgent::getAction(const GameState& state) const {
   vector<Action> actions = state.getActions(idx_);
   Action bestAction;
   double value = MouseAgent::alphaBeta(state, 0, -kInfinity, kInfinity, &bestAction);
-  cout << "Value: " << evaluate(state);
+  //cout << "Value: " << evaluate(state);
   //cout << "Action: " << bestAction.to.x << ", " << bestAction.to.y << endl;
   //exit(0);
   return bestAction;
@@ -91,6 +91,10 @@ double MouseAgent::evaluate(const GameState& state) const {
     return 100000;
   }
 
+  if (state.numCheeseSquashed() > 0) {
+    return -50000;
+  }
+
   double distanceCatsInverse = 0;
   double freedomScoreCats = 0;
   double manhattanDistanceNearestCat = 100;
@@ -116,9 +120,11 @@ double MouseAgent::evaluate(const GameState& state) const {
   }
 
   double distanceCheesesInverse = 0;
+  double numCheese = 0;
   for (int y = 0; y < kLevelCols; y++) {
     for (int x = 0; x < kLevelCols; x++) {
       if (state.isCheesePosition(x, y)) {
+	numCheese++;
 	const double distance = Utils::mapGetDefault(distances,
 						     Position(x, y),
 						     kInfinity);
@@ -131,11 +137,11 @@ double MouseAgent::evaluate(const GameState& state) const {
 
   double score = state.getDecayedScore();
   double value =
-    -weights_.at(0) * distanceCatsInverse * 2 +
-    //-weights_.at(1) * manhattanDistanceNearestCat * 0.001 +
+    -weights_.at(0) * distanceCatsInverse * 3 +
+    -weights_.at(1) * manhattanDistanceNearestCat * 0.001 +
     -weights_.at(2) * freedomScoreCats +
     weights_.at(3) * distanceCheesesInverse * 5 +
-    weights_.at(4) * score * 50;
+    weights_.at(4) * score * 10;
 
   if (true) {
     //cerr << "Score: " << score << endl;
