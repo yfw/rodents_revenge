@@ -29,6 +29,10 @@ double GeneticUtils::unifRand(double a, double b) {
   return (b-a) * unifRand() + a;
 }
 
+double GeneticUtils::getNoise(double noiseSize) {
+  return getNoise(noiseSize, -1);
+}
+
 double GeneticUtils::getNoise(double noiseSize, int populationIndex) {
   if (populationIndex == 0) {
     return 0; // no noise for the first one
@@ -38,11 +42,11 @@ double GeneticUtils::getNoise(double noiseSize, int populationIndex) {
 }
 
 void GeneticUtils::getWeights(vector<double>& weights, string map) {
-  const int populationSize = 3;
-  const int numberOfGenerations = 2;
+  const int populationSize = 20;
+  const int numberOfGenerations = 10;
+  const double mutationProb = 0.01;
   const unsigned int numWeights = sizeof(kInitialWeights) / sizeof(double); 
   const double noiseSizes[] = {15, 0.1, 1, 5, 50, 0.1};
-  srand(1);
 
   // initialize weights
   vector<vector<double> > population(populationSize, vector<double>());
@@ -76,7 +80,6 @@ void GeneticUtils::getWeights(vector<double>& weights, string map) {
       }
       MouseAgent mouse(population[i], cats);
       time_t seconds = time(NULL);
-      srand(1);
       int score = run(g, mouse, cats);
       if (score > overallBestScore) {
         overallBestScore = score;
@@ -107,7 +110,9 @@ void GeneticUtils::getWeights(vector<double>& weights, string map) {
         } else {
           newPopulation[i].push_back(dadWeights[weightIdx]);
         }
-        //TODO: mutation prob
+        if (unifRand() < mutationProb) {
+          newPopulation[i][weightIdx] = newPopulation[i][weightIdx] + getNoise(noiseSizes[weightIdx]);
+        }
       }
     }
     population = newPopulation;
