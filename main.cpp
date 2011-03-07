@@ -37,6 +37,11 @@ int main(int argc, char* argv[]) {
     if (flag == "--weights") {
       vector<double> weights;
       GeneticUtils::getWeights(weights, map);
+      cout << "overall best weights" << endl;
+      for (unsigned int i = 0; i < weights.size(); i++) {
+        cout << weights[i] << ",";
+      }
+      cout << endl;
     }
   } else {
     GameState g;

@@ -38,8 +38,8 @@ double GeneticUtils::getNoise(double noiseSize, int populationIndex) {
 }
 
 void GeneticUtils::getWeights(vector<double>& weights, string map) {
-  const int populationSize = 10;
-  const int numberOfGenerations = 5;
+  const int populationSize = 3;
+  const int numberOfGenerations = 2;
   const unsigned int numWeights = sizeof(kInitialWeights) / sizeof(double); 
   const double noiseSizes[] = {15, 0.1, 1, 5, 50, 0.1};
   srand(1);
@@ -52,6 +52,9 @@ void GeneticUtils::getWeights(vector<double>& weights, string map) {
     }
   }
   
+  double overallBestScore = 0;
+  vector<double> overallBestWeights;
+
   // run with weights
   // when to terminate?
   for (int num = 0; num < numberOfGenerations; num++)  {
@@ -75,6 +78,10 @@ void GeneticUtils::getWeights(vector<double>& weights, string map) {
       time_t seconds = time(NULL);
       srand(1);
       int score = run(g, mouse, cats);
+      if (score > overallBestScore) {
+        overallBestScore = score;
+        overallBestWeights = population[i];
+      }
       for (int scoreCount = 0; scoreCount < score; scoreCount++) {
         parentPool.push_back(i);
       }
@@ -105,6 +112,7 @@ void GeneticUtils::getWeights(vector<double>& weights, string map) {
     }
     population = newPopulation;
   }
+  weights = overallBestWeights;
 }
 
 
