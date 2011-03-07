@@ -30,10 +30,15 @@ bool GameState::load(const string& fileName) {
         agentPositions_.insert(agentPositions_.begin(),
 			       Position(x, y));
       } else if (level[y][x] == CAT) {
-        agentPositions_.push_back(Position(x, y));
+	agentPositions_.push_back(Position(x, y));
       }
     }
   }
+  while (agentPositions_.size() < kCats + 1) {
+    agentPositions_.push_back(Position(0, 0));
+    spawnCat(agentPositions_.size() - 1);
+  }
+
   decayedScore_ = 0;
   score_ = 0;
   turnIdx_ = 0;
@@ -187,7 +192,6 @@ GameState GameState::getNext(const Action& action) const {
     if (get(x, y) == MOUSE) {
       next.gameOver_ = true;
     }
-    cheesed = false;
   }
 
   next.set(from, NOTHING);
@@ -198,16 +202,7 @@ GameState GameState::getNext(const Action& action) const {
   if (cheesed) {
     for (int i = 1; i < next.agentPositions_.size(); i++) {
       if (isCatStuck(i)) {
-	vector<Position> spawnPoints;
-	for (int y = 0; y < kLevelCols; y++) {
-	  for (int x = 0; x < kLevelRows; x++) {
-	    if ((next.get(x, y) == NOTHING) && 
-		(abs(x - to.x) + abs(y - to.y)) > 4) {
-	      spawnPoints.push_back(Position(x, y));
-	    }
-	  }
-	}
-	next.setAgent(spawnPoints.at(rand() % spawnPoints.size()), i);
+	next.spawnCat(i);
       }
     }
   }
@@ -218,6 +213,20 @@ GameState GameState::getNext(const Action& action) const {
   }
 
   return next;
+}
+
+void GameState::spawnCat(const int catIdx) {
+  vector<Position> spawnPoints;
+  Position to = getMousePosition();
+  for (int y = 0; y < kLevelCols; y++) {
+    for (int x = 0; x < kLevelRows; x++) {
+      if ((get(x, y) == NOTHING) &&
+	  (abs(x - to.x) + abs(y - to.y)) >= kSpawnDistanceMin) {
+	spawnPoints.push_back(Position(x, y));
+      }
+    }
+  }
+  setAgent(spawnPoints.at(rand() % spawnPoints.size()), catIdx);
 }
 
 void GameState::print() const {

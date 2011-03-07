@@ -73,6 +73,7 @@ class GameState {
   bool isCheesePosition(const int x, const int y) const;
   bool isCatPosition(const int x, const int y) const;
   bool isCatStuck(const int catIdx) const;
+  void spawnCat(const int catIdx);
 
  private:
   Position getPosition(const int idx) const;

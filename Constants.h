@@ -5,6 +5,7 @@
 static const int kLevelRows = 23;
 static const int kLevelCols = 23;
 static const int kMaxTime = 5000;
+static const int kSpawnDistanceMin = 7;
 static const double kInfinity = 10000000;
 static const int kScoreEatCheese = 5;
 static const int kScoreTrapCat = 1;
@@ -15,5 +16,6 @@ static const ObjType BLOCK = '+';
 static const ObjType MOUSE = 'M';
 static const ObjType CAT = 'C';
 static const ObjType CHEESE = 'H';
+static const int kCats = 2;
 
 #endif

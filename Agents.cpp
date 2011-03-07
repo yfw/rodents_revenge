@@ -88,11 +88,11 @@ double MouseAgent::evaluate(const GameState& state) const {
   }
 
   if (state.wasCheesed()) {
-    return 100000;
+    return 10000;
   }
 
   if (state.numCheeseSquashed() > 0) {
-    return -50000;
+    return -5000;
   }
 
   double distanceCatsInverse = 0;
@@ -137,8 +137,8 @@ double MouseAgent::evaluate(const GameState& state) const {
 
   double score = state.getDecayedScore();
   double value =
-    -weights_.at(0) * distanceCatsInverse * 3 +
-    -weights_.at(1) * manhattanDistanceNearestCat * 0.001 +
+    -weights_.at(0) * distanceCatsInverse * 20 +
+    -weights_.at(1) * manhattanDistanceNearestCat * 0.0001 +
     -weights_.at(2) * freedomScoreCats +
     weights_.at(3) * distanceCheesesInverse * 5 +
     weights_.at(4) * score * 10;
