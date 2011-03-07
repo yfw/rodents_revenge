@@ -89,10 +89,6 @@ double MouseAgent::evaluate(const GameState& state) const {
     return 5000;
   }
 
-  if (state.numCheeseSquashed() > 0) {
-    return -1000;
-  }
-
   double distanceCatsInverse = 0;
   double freedomScoreCats = 0;
   double manhattanDistanceNearestCat = kLevelRows;
@@ -133,6 +129,7 @@ double MouseAgent::evaluate(const GameState& state) const {
     }
   }
 
+  double cheeseSquashed = state.numCheeseSquashed();
   double score = state.getDecayedScore();
   double blocksMoved = state.getNumBlocksMoved();
   double value =
@@ -141,7 +138,8 @@ double MouseAgent::evaluate(const GameState& state) const {
     -weights_.at(2) * freedomScoreCats +
     weights_.at(3) * distanceCheesesInverse +
     weights_.at(4) * score +
-    weights_.at(5) * blocksMoved;
+    weights_.at(5) * blocksMoved +
+    -weights_.at(6) * cheeseSquashed;
 
   return value;
 }
@@ -189,12 +187,17 @@ Action CatAgent::getAction(const GameState& state) const {
   const Position& mousePosition = state.getMousePosition();
   Action minDistAction;
   double minDist = kInfinity;
+  vector<Action> bestActions;
   for (size_t i = 0; i < actions.size(); i++) {
     double dist = Utils::manhattanDistance(actions[i].to, mousePosition);
     if (dist < minDist) {
       minDist = dist;
-      minDistAction = actions[i];
+      bestActions.clear();
+      bestActions.push_back(actions[i]);
+    } else if (dist == minDist) {
+      bestActions.push_back(actions[i]);
     }
   }
-  return minDistAction;
+
+  return bestActions.at(state.getTime() % bestActions.size());
 }
