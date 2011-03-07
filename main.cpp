@@ -12,6 +12,7 @@ int run(const GameState& state,
 	const vector<CatAgent>& cats) {
   GameState g = state;
   while (!g.gameOver()) {
+    usleep(500000);
     system("clear");
     g.print();
     if (g.getTurn() == 0) {

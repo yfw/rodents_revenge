@@ -39,6 +39,7 @@ bool GameState::load(const string& fileName) {
   time_ = 0;
   gameOver_ = false;
   wasCheesed_ = false;
+  numCheeseSquashed_ = 0;
 }
 
 Position GameState::getMousePosition() const {
@@ -149,6 +150,7 @@ GameState GameState::getNext(const Action& action) const {
   const Position& to = action.to;
   const Position& from = action.from;
   bool cheesed = true;
+  int numSquashed = 0;
   next.time_++;
   next.turnIdx_ = ((turnIdx_ + 1) % agentPositions_.size());
 
@@ -164,6 +166,9 @@ GameState GameState::getNext(const Action& action) const {
       }
       if ((get(x, y) == NOTHING) ||
           (get(x, y) == CHEESE)) {
+	if (get(x, y) == CHEESE) {
+	  numSquashed += 1;
+	}
         next.set(x, y, BLOCK);
       }
     } else if (get(x, y) == CHEESE) {
@@ -197,6 +202,7 @@ GameState GameState::getNext(const Action& action) const {
   next.set(from, NOTHING);
   next.setAgent(to, turnIdx_);
   next.wasCheesed_ = cheesed;
+  next.numCheeseSquashed_ = numCheeseSquashed_ + numSquashed;
 
   if (cheesed) {
     for (int i = 1; i < next.agentPositions_.size(); i++) {

@@ -70,6 +70,7 @@ class GameState {
 
   bool gameOver() const { return (gameOver_ || time_ > kMaxTime); }
   bool wasCheesed() const { return wasCheesed_; }
+  int numCheeseSquashed() const { return numCheeseSquashed_; }
   bool isCheesePosition(const int x, const int y) const;
   bool isCatPosition(const int x, const int y) const;
   bool isCatStuck(const int catIdx) const;
@@ -94,6 +95,7 @@ class GameState {
   int time_;
   bool gameOver_;
   bool wasCheesed_;
+  int numCheeseSquashed_;
 };
 
 

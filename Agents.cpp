@@ -115,9 +115,11 @@ double MouseAgent::evaluate(const GameState& state) const {
   }
 
   double distanceCheesesInverse = 0;
+  double numCheese = 0;
   for (int y = 0; y < kLevelCols; y++) {
     for (int x = 0; x < kLevelCols; x++) {
       if (state.isCheesePosition(x, y)) {
+	numCheese++;
 	const double distance = Utils::mapGetDefault(mouseDistances,
 						     Position(x, y),
 						     kInfinity);
@@ -128,13 +130,19 @@ double MouseAgent::evaluate(const GameState& state) const {
     }
   }
 
+  double cheeseSquashedScore = 0;
+  if (state.numCheeseSquashed() > 0) {
+    cheeseSquashedScore = -700;
+  }
+
   double score = state.getDecayedScore();
   double value =
     -weights_.at(1) * distanceCatsInverse * 10 +
     -weights_.at(2) * minManhattanDistanceCats * 0.001 +
      weights_.at(3) * distanceCheesesInverse +
      weights_.at(4) * score +
-    -weights_.at(5) * freedomScoreCats * 10;
+    -weights_.at(5) * freedomScoreCats * 10 +
+    cheeseSquashedScore;
 
   if (true) {
     //cerr << "Score: " << score << endl;
