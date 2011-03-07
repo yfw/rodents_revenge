@@ -32,6 +32,11 @@ int run(GameState state,
       }
     }
 
+    const sf::Input& input = app.GetInput();
+    if (input.IsKeyDown(sf::Key::Q)) {
+      app.Close();
+    }
+
     renderer.render(app, state);
     state.print();
     if (clock.GetElapsedTime() > 0.0001) {
