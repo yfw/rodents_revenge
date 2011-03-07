@@ -32,8 +32,8 @@ class MouseAgent : public Agent {
       weights_(weights),
       cats_(cats) {}
   Action getAction(const GameState& state) const;
- protected:
   double evaluate(const GameState& state) const;
+ protected:
 
   double alphaBeta(const GameState& state,
 		   int level,

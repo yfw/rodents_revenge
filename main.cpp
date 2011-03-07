@@ -13,16 +13,17 @@ int run(const GameState& state,
 	const vector<CatAgent>& cats) {
   GameState g = state;
   while (!g.gameOver()) {
-    system("clear");
+    //system("clear");
     g.print();
+    cout << "Value: " << mouse.evaluate(g) << endl;
     if (g.getTurn() == 0) {
       g = g.getNext(mouse.getAction(g));
     } else {
       g = g.getNext(cats[g.getTurn() - 1].getAction(g));
     }
   }
-  system("clear");
-  g.print();
+  //system("clear");
+  //g.print();
   return g.getScore();
 }
 

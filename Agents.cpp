@@ -25,8 +25,7 @@ double MouseAgent::alphaBeta(
   double beta,
   Action* actionPtr) const {
 
-  if (state.wasCheesed() ||
-      state.gameOver() ||
+  if (state.gameOver() ||
       level == (depth * state.getNumAgents())) {
     return evaluate(state);
   }
@@ -84,15 +83,15 @@ double MouseAgent::evaluate(const GameState& state) const {
   Utils::shortestDistances(state.getMousePosition(), state, &distances);
 
   if (state.gameOver()) {
-    return -100000;
+    return -1000000;
   }
 
   if (state.wasCheesed()) {
-    return 10000;
+    return 5000;
   }
 
   if (state.numCheeseSquashed() > 0) {
-    return -5000;
+    return -1000;
   }
 
   double distanceCatsInverse = 0;
@@ -138,10 +137,10 @@ double MouseAgent::evaluate(const GameState& state) const {
   double score = state.getDecayedScore();
   double value =
     -weights_.at(0) * distanceCatsInverse * 20 +
-    -weights_.at(1) * manhattanDistanceNearestCat * 0.0001 +
+    -weights_.at(1) * manhattanDistanceNearestCat * 0.01 +
     -weights_.at(2) * freedomScoreCats +
     weights_.at(3) * distanceCheesesInverse * 5 +
-    weights_.at(4) * score * 10;
+    weights_.at(4) * score * 100;
 
   if (true) {
     //cerr << "Score: " << score << endl;
