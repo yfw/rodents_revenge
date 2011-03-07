@@ -4,7 +4,6 @@
 #include <cmath>
 #include "Agents.h"
 #include "Utils.h"
-#include "Constants.h"
 
 Action MouseAgent::getAction(const GameState& state) const {
   //cout << "Value: " << MouseAgent::evaluate(state) << endl;
@@ -38,7 +37,7 @@ double MouseAgent::alphaBeta(
     : vector<Action>(1, cats_[agentIndex - 1].getAction(state));
 
   vector<Action> bestActions;
-  for (int i = 0; i < actions.size(); i++) {
+  for (size_t i = 0; i < actions.size(); i++) {
     const GameState successor = state.getNext(actions[i]);
     double nextV = alphaBeta(successor, level + 1, alpha, beta, actionPtr);
     if (isMax) {
@@ -190,7 +189,7 @@ Action CatAgent::getAction(const GameState& state) const {
   const Position& mousePosition = state.getMousePosition();
   Action minDistAction;
   double minDist = kInfinity;
-  for (int i = 0; i < actions.size(); i++) {
+  for (size_t i = 0; i < actions.size(); i++) {
     double dist = Utils::manhattanDistance(actions[i].to, mousePosition);
     if (dist < minDist) {
       minDist = dist;
