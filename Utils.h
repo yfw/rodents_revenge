@@ -17,7 +17,8 @@ class Utils {
  public:
   static double manhattanDistance(const Position& a,
 				  const Position& b);
-
+  static double minDistance(const Position& a,
+			    const Position& b);
   static void shortestDistances(
     const Position& position,
     const GameState& state,
