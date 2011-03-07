@@ -2,6 +2,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 #include "GeneticUtils.h"
 #include "GameState.h"
 #include "Agents.h"
@@ -42,9 +43,9 @@ double GeneticUtils::getNoise(double noiseSize, int populationIndex) {
 }
 
 void GeneticUtils::getWeights(vector<double>& weights, string map) {
-  const int populationSize = 20;
+  const int populationSize = 10;
   const int numberOfGenerations = 10;
-  const double mutationProb = 0.01;
+  const double mutationProb = 0.02;
   const unsigned int numWeights = sizeof(kInitialWeights) / sizeof(double); 
   const double noiseSizes[] = {15, 0.1, 1, 5, 50, 0.1};
 
@@ -52,7 +53,7 @@ void GeneticUtils::getWeights(vector<double>& weights, string map) {
   vector<vector<double> > population(populationSize, vector<double>());
   for (unsigned int i = 0; i < population.size(); i++) {
     for (unsigned int j = 0; j < numWeights; j++) {
-      population[i].push_back(kInitialWeights[j] + getNoise(noiseSizes[j], i));
+      population[i].push_back(fabs(kInitialWeights[j] + getNoise(noiseSizes[j], i)));
     }
   }
   
@@ -62,6 +63,9 @@ void GeneticUtils::getWeights(vector<double>& weights, string map) {
   // run with weights
   // when to terminate?
   for (int num = 0; num < numberOfGenerations; num++)  {
+    double generationBestScore = 0;
+    vector<double> generationBestWeights;
+
     for (unsigned int i = 0; i < population.size(); i++) {
       cout << "index=" << i << ":";
       for (unsigned int j = 0; j < numWeights; j++) {
@@ -85,6 +89,10 @@ void GeneticUtils::getWeights(vector<double>& weights, string map) {
         overallBestScore = score;
         overallBestWeights = population[i];
       }
+      if (score > generationBestScore) {
+        generationBestScore = score;
+        generationBestWeights = population[i];
+      }
       for (int scoreCount = 0; scoreCount < score; scoreCount++) {
         parentPool.push_back(i);
       }
@@ -95,7 +103,11 @@ void GeneticUtils::getWeights(vector<double>& weights, string map) {
 
     // get new population
     vector<vector<double> > newPopulation(populationSize, vector<double>());
-    for (unsigned int i = 0; i < newPopulation.size(); i++) {
+
+    // always include the best of the previous generation
+    newPopulation[0] = generationBestWeights;
+
+    for (unsigned int i = 1; i < newPopulation.size(); i++) {
       // mating with self is ok?
       int momIndex = parentPool[rand() % parentPool.size()];
       int dadIndex = parentPool[rand() % parentPool.size()];
@@ -111,7 +123,8 @@ void GeneticUtils::getWeights(vector<double>& weights, string map) {
           newPopulation[i].push_back(dadWeights[weightIdx]);
         }
         if (unifRand() < mutationProb) {
-          newPopulation[i][weightIdx] = newPopulation[i][weightIdx] + getNoise(noiseSizes[weightIdx]);
+          cout << "mutant!" << endl;
+          newPopulation[i][weightIdx] = fabs(newPopulation[i][weightIdx] + getNoise(noiseSizes[weightIdx]));
         }
       }
     }
