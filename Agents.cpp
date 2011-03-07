@@ -101,8 +101,11 @@ double MouseAgent::evaluate(const GameState& state) const {
       Utils::manhattanDistance(state.getMousePosition(),
 			       catPosition);
 
-    if (distance >= 1) {
-      distanceCatsInverse += (1 / distance);
+    if (distance > 1) {
+      distanceCatsInverse += (1 / (distance - 1));
+    } else {
+      // mouse cant get away
+      return -100000;
     }
 
     if (!state.isCatStuck(i) &&
