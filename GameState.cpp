@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <sstream>
 #include "GameState.h"
+#include "Utils.h"
 
 GameState::GameState() {}
 
@@ -224,8 +225,8 @@ void GameState::spawnCat(const int catIdx) {
   Position to = getMousePosition();
   for (int y = 0; y < kLevelCols; y++) {
     for (int x = 0; x < kLevelRows; x++) {
-      if ((get(x, y) == NOTHING) &&
-	  (abs(x - to.x) + abs(y - to.y)) >= kSpawnDistanceMin) {
+      if ((Utils::manhattanDistance(Position(x, y), to) >= kSpawnDistanceMin) &&
+	  (get(x, y) == NOTHING)) {
 	spawnPoints.push_back(Position(x, y));
       }
     }
