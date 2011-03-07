@@ -1,4 +1,4 @@
-OBJS = GameState.o Agents.o Utils.o
+OBJS = GameState.o Agents.o Utils.o GeneticUtils.o
 CC = G++
 DEBUG = -g
 CFLAGS = -Wall -I/opt/local/include/ -c ${DEBUG}
@@ -12,3 +12,6 @@ clean:
 
 run: rr
 	./rr Levels/default
+
+weights: rr
+	./rr Levels/default --weights

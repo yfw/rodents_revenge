@@ -1,10 +1,11 @@
-
 #include <assert.h>
 #include <iostream>
 #include <stdlib.h>
 #include "GameState.h"
 #include "Agents.h"
 #include <time.h>
+#include "GeneticUtils.h"
+#include "Constants.h"
 
 using namespace std;
 
@@ -22,31 +23,36 @@ int run(const GameState& state,
       g = g.getNext(cats[g.getTurn() - 1].getAction(g));
     }
   }
-  //system("clear");
-  //g.print();
+  system("clear");
+  g.print();
   return g.getScore();
 }
 
+
 int main(int argc, char* argv[]) {
-  assert(argc == 2);
-  GameState g;
-  g.load(argv[1]);
-  vector<CatAgent> cats;
-  for (int i = 1; i < g.getNumAgents(); i++) {
-    cats.push_back(CatAgent(i));
+  assert(argc >= 2);
+  string map = argv[1];
+  if (argc == 3) {
+    string flag = argv[2];
+    if (flag == "--weights") {
+      vector<double> weights;
+      GeneticUtils::getWeights(weights, map);
+    }
+  } else {
+    GameState g;
+    g.load(map);
+    vector<CatAgent> cats;
+    for (int i = 1; i < g.getNumAgents(); i++) {
+      cats.push_back(CatAgent(i));
+    }
+    vector<double> weights(kInitialWeights, kInitialWeights + sizeof(kInitialWeights) / sizeof(double));
+    MouseAgent mouse(weights, cats);
+
+    time_t seconds = time(NULL);
+    run(g, mouse, cats);
+    cout << time(NULL) - seconds;
+    return 0;
   }
-  vector<double> weights;
-  weights.push_back(1);
-  weights.push_back(1);
-  weights.push_back(1);
-  weights.push_back(1);
-  weights.push_back(1);
-  weights.push_back(1);
 
-  MouseAgent mouse(weights, cats);
-
-  time_t seconds = time(NULL);
-  run(g, mouse, cats);
-  cout << time(NULL) - seconds;
   return 0;
 }
