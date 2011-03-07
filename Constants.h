@@ -2,8 +2,8 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-static const int kLevelRows = 23;
-static const int kLevelCols = 23;
+static const unsigned int kLevelRows = 23;
+static const unsigned int kLevelCols = 23;
 static const int kMaxTime = 5000;
 static const int kSpawnDistanceMin = 7;
 static const double kInfinity = 10000000;

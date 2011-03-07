@@ -3,7 +3,6 @@
 #define AGENTS_H
 
 #include <vector>
-#include "Constants.h"
 #include "GameState.h"
 
 using namespace std;

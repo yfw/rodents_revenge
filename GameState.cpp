@@ -47,6 +47,8 @@ bool GameState::load(const string& fileName) {
   wasCheesed_ = false;
   numCheeseSquashed_ = 0;
   numBlocksMoved_ = 0;
+
+  return true;
 }
 
 Position GameState::getMousePosition() const {
