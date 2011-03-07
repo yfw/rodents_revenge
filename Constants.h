@@ -18,6 +18,6 @@ static const ObjType CAT = 'C';
 static const ObjType CHEESE = 'H';
 static const int kCats = 2;
 static const double kInitialWeights[] = {40, 0.1, 1, 5, 100, 0.1, 400};
-static const int kAlphaBetaDepth = 3;
+static const int kAlphaBetaDepth = 2;
 
 #endif

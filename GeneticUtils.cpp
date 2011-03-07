@@ -43,11 +43,11 @@ double GeneticUtils::getNoise(double noiseSize, int populationIndex) {
 }
 
 void GeneticUtils::getWeights(vector<double>& weights, string map) {
-  const int populationSize = 10;
-  const int numberOfGenerations = 10;
+  const int populationSize = 20;
+  const int numberOfGenerations = 1000;
   const double mutationProb = 0.02;
   const unsigned int numWeights = sizeof(kInitialWeights) / sizeof(double); 
-  const double noiseSizes[] = {15, 0.1, 1, 5, 50, 0.1};
+  const double noiseSizes[] = {15, 0.1, 1, 5, 50, 0.1, 100};
 
   // initialize weights
   vector<vector<double> > population(populationSize, vector<double>());
@@ -77,7 +77,6 @@ void GeneticUtils::getWeights(vector<double>& weights, string map) {
     for (unsigned int i = 0; i < population.size(); i++) {
       GameState g;
       g.load(map);
-      // TODO: randomize initial cat position?
       vector<CatAgent> cats;
       for (int catIdx = 1; catIdx < g.getNumAgents(); catIdx++) {
         cats.push_back(CatAgent(catIdx));
@@ -129,6 +128,12 @@ void GeneticUtils::getWeights(vector<double>& weights, string map) {
       }
     }
     population = newPopulation;
+    cout << endl << "overall best weights:";
+    for (unsigned int i = 0; i < overallBestWeights.size(); i++) {
+      cout << overallBestWeights[i] << ",";
+    }
+    cout << endl;
+    cout << "overall best score:" << overallBestScore << endl << endl;
   }
   weights = overallBestWeights;
 }
