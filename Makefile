@@ -26,7 +26,7 @@ clean:
 	rm -f *.o *~ *.gch rr
 
 run: rr
-	./rr Levels/test
+	./rr Levels/level2
 
 weights: rr
-	./rr Levels/default --weights
+	./rr Levels/level2 --weights
