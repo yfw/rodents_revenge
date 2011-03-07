@@ -20,6 +20,11 @@ double Utils::manhattanDistance(const Position& a,
   return max(abs(a.x - b.x), abs(a.y - b.y));
 }
 
+double Utils::minDistance(const Position& a,
+			  const Position& b) {
+  return min(abs(a.x - b.x), abs(a.y - b.y));
+}
+
 void Utils::shortestDistances(
   const Position& position,
   const GameState& state,

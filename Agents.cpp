@@ -186,16 +186,26 @@ Action CatAgent::getAction(const GameState& state) const {
   const vector<Action> actions = state.getActions(idx_);
   const Position& mousePosition = state.getMousePosition();
   Action minDistAction;
+  double minManDist = kInfinity;
   double minDist = kInfinity;
   vector<Action> bestActions;
   for (size_t i = 0; i < actions.size(); i++) {
     double dist = Utils::manhattanDistance(actions[i].to, mousePosition);
-    if (dist < minDist) {
-      minDist = dist;
+    if (dist < minManDist) {
+      minManDist = dist;
+      minDist = Utils::minDistance(actions[i].to, mousePosition);
       bestActions.clear();
       bestActions.push_back(actions[i]);
-    } else if (dist == minDist) {
-      bestActions.push_back(actions[i]);
+    } else if (dist == minManDist) {
+      dist = Utils::minDistance(actions[i].to, mousePosition);
+      if (dist < minDist) {
+	minDist = dist;
+	bestActions.clear();
+	bestActions.push_back(actions[i]);
+      } else if (dist == minDist) {
+	// Wow, truly a tie
+	bestActions.push_back(actions[i]);
+      }
     }
   }
 
