@@ -115,18 +115,11 @@ double Utils::freedomScore(
     }
   }
 
-  double score = 0;
-  for (int i = 0; i < visitedDistances.size(); i++) {
-    double distance = visitedDistances[i];
-    score += 1;
-    continue;
-
-    if (distance <= peakDistance) {
-      score += 1;
-    } else if ((distance - peakDistance) <= 10) {
-      score += (10 - (distance - peakDistance)) / 20.0;
-    }
-  }
+  double score = visited.size();
+  //for (int i = 0; i < visitedDistances.size(); i++) {
+  //double distance = visitedDistances[i];
+  //score += 1;
+  //}
 
   if (cache.size() > kCacheSize) {
     cache.clear();

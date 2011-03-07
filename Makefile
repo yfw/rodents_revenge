@@ -23,10 +23,10 @@ Renderer.o: Renderer.cpp Renderer.h GameState.h Constants.h
 	${CC} ${CFLAGS} Renderer.cpp
 
 clean:
-	rm *.o *~ *.gch rr
+	rm -f *.o *~ *.gch rr
 
 run: rr
-	./rr Levels/default
+	./rr Levels/test
 
 weights: rr
 	./rr Levels/default --weights
