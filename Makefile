@@ -1,4 +1,4 @@
-OBJS = GameState.o Agents.o Utils.o GeneticUtils.o
+OBJS = GameState.o Agents.o Utils.o GeneticUtils.o Renderer.o
 CC = G++
 DEBUG = -g
 CFLAGS = -I/opt/local/include/ -c ${DEBUG}
@@ -15,6 +15,12 @@ Agents.o: Agents.cpp Agents.h GameState.h Constants.h Utils.h
 
 Utils.o: Utils.cpp Utils.h GameState.h Constants.h
 	${CC} ${CFLAGS} Utils.cpp
+
+GeneticUtils.o: GeneticUtils.cpp GeneticUtils.h GameState.h Agents.h Constants.h
+	${CC} ${CFLAGS} GeneticUtils.cpp
+
+Renderer.o: Renderer.cpp Renderer.h GameState.h Constants.h
+	${CC} ${CFLAGS} Renderer.cpp
 
 clean:
 	rm *.o *~ *.gch rr

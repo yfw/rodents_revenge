@@ -1,31 +1,50 @@
 #include <assert.h>
 #include <iostream>
 #include <stdlib.h>
+#include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
+
 #include "GameState.h"
 #include "Agents.h"
-#include <time.h>
 #include "GeneticUtils.h"
 #include "Constants.h"
+#include "Renderer.h"
 
 using namespace std;
 
-int run(const GameState& state,
+int run(GameState state,
 	const MouseAgent& mouse,
 	const vector<CatAgent>& cats) {
-  GameState g = state;
-  while (!g.gameOver()) {
-    //system("clear");
-    g.print();
-    cout << "Value: " << mouse.evaluate(g) << endl;
-    if (g.getTurn() == 0) {
-      g = g.getNext(mouse.getAction(g));
-    } else {
-      g = g.getNext(cats[g.getTurn() - 1].getAction(g));
+
+  sf::RenderWindow app(
+    sf::VideoMode(kLevelRows * 16, kLevelCols * 16, 32),
+    "Rodent's Revenge");
+
+  sf::Clock clock;
+
+  Renderer renderer;
+
+  while (!state.gameOver() && app.IsOpened()) {
+    sf::Event event;
+    while (app.GetEvent(event)) {
+      if (event.Type == sf::Event::Closed) {
+	app.Close();
+      }
+    }
+
+    renderer.render(app, state);
+    state.print();
+    if (clock.GetElapsedTime() > 0.0001) {
+      clock.Reset();
+      if (state.getTurn() == 0) {
+	state = state.getNext(mouse.getAction(state));
+      } else {
+	state = state.getNext(cats[state.getTurn() - 1].getAction(state));
+      }
     }
   }
-  system("clear");
-  g.print();
-  return g.getScore();
+  state.print();
+  return state.getScore();
 }
 
 
@@ -52,10 +71,7 @@ int main(int argc, char* argv[]) {
     }
     vector<double> weights(kInitialWeights, kInitialWeights + sizeof(kInitialWeights) / sizeof(double));
     MouseAgent mouse(weights, cats);
-
-    time_t seconds = time(NULL);
     run(g, mouse, cats);
-    cout << time(NULL) - seconds;
     return 0;
   }
 

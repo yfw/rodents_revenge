@@ -82,7 +82,7 @@ double MouseAgent::evaluate(const GameState& state) const {
   Utils::shortestDistances(state.getMousePosition(), state, &distances);
 
   if (state.gameOver()) {
-    return -1000000;
+    return -100000;
   }
 
   if (state.wasCheesed()) {
@@ -95,7 +95,7 @@ double MouseAgent::evaluate(const GameState& state) const {
 
   double distanceCatsInverse = 0;
   double freedomScoreCats = 0;
-  double manhattanDistanceNearestCat = 100;
+  double manhattanDistanceNearestCat = kLevelRows;
   for (int i = 1; i <= state.getNumAgents() - 1; i++) {
     const Position& catPosition = state.getCatPosition(i);
     const double distance = Utils::mapGetDefault(distances,
