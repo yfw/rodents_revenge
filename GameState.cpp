@@ -46,6 +46,7 @@ bool GameState::load(const string& fileName) {
   gameOver_ = false;
   wasCheesed_ = false;
   numCheeseSquashed_ = 0;
+  numBlocksMoved_ = 0;
 }
 
 Position GameState::getMousePosition() const {
@@ -172,17 +173,18 @@ GameState GameState::getNext(const Action& action) const {
 	if (get(x, y) == CHEESE) {
 	  numSquashed += 1;
 	}
+	next.numBlocksMoved_ += pow(0.99999, next.time_);
         next.set(x, y, BLOCK);
       }
     } else if (get(x, y) == CHEESE) {
       next.score_ += kScoreEatCheese;
-      next.decayedScore_ += (kScoreEatCheese * pow(0.999, next.time_));
+      next.decayedScore_ += (kScoreEatCheese * pow(0.99999, next.time_));
     }
     for (int i = 1; i < agentPositions_.size(); i++) {
       if (isCatStuck(i)) {
         next.set(agentPositions_[i], CHEESE);
         next.score_ += kScoreTrapCat;
-	next.decayedScore_ += (kScoreTrapCat * pow(0.999, next.time_));
+	next.decayedScore_ += (kScoreTrapCat * pow(0.99990, next.time_));
 	cheesed = true;
       }
     }
@@ -239,9 +241,10 @@ void GameState::print() const {
 
   cout << "Score: " << score_ << endl;
   cout << "Time: " << time_ << endl;
-  for (int i = 0; i < agentPositions_.size(); i++) {
-    printAgent(i);
-  }
+  //cout << "Blocks Moved: " << numBlocksMoved_ << endl;
+  //for (int i = 0; i < agentPositions_.size(); i++) {
+  //printAgent(i);
+  //}
 }
 
 void GameState::printAgent(const int idx) const {

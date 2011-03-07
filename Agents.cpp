@@ -135,17 +135,14 @@ double MouseAgent::evaluate(const GameState& state) const {
   }
 
   double score = state.getDecayedScore();
+  double blocksMoved = state.getNumBlocksMoved();
   double value =
-    -weights_.at(0) * distanceCatsInverse * 20 +
-    -weights_.at(1) * manhattanDistanceNearestCat * 0.01 +
+    -weights_.at(0) * distanceCatsInverse * 30 +
+    -weights_.at(1) * manhattanDistanceNearestCat * 0.1 +
     -weights_.at(2) * freedomScoreCats +
     weights_.at(3) * distanceCheesesInverse * 5 +
-    weights_.at(4) * score * 100;
-
-  if (true) {
-    //cerr << "Score: " << score << endl;
-    //cerr << "Value: " << manhattanDistanceNearestCat << endl;
-  }
+    weights_.at(4) * score * 100 +
+    weights_.at(5) * blocksMoved * 0.01;
 
   return value;
 }

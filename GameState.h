@@ -60,6 +60,7 @@ class GameState {
   int getTurn() const { return turnIdx_; }
   int getTime() const { return time_; }
   int getNumAgents() const { return agentPositions_.size(); }
+  double getNumBlocksMoved() const { return numBlocksMoved_; }
   Position getMousePosition() const;
   Position getCatPosition(const int catIdx) const;
   vector<Action> getActions(const int idx) const;
@@ -96,6 +97,7 @@ class GameState {
   bool gameOver_;
   bool wasCheesed_;
   int numCheeseSquashed_;
+  double numBlocksMoved_;
 };
 
 
