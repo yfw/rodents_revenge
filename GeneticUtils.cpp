@@ -48,6 +48,7 @@ void GeneticUtils::getWeights(vector<double>& weights, string map) {
   const double mutationProb = 0.02;
   const unsigned int numWeights = sizeof(kInitialWeights) / sizeof(double); 
   const double noiseSizes[] = {15, 0.1, 1, 5, 50, 0.1, 100};
+  const int numRuns = 10;
 
   // initialize weights
   vector<vector<double> > population(populationSize, vector<double>());
@@ -75,15 +76,18 @@ void GeneticUtils::getWeights(vector<double>& weights, string map) {
     }
     vector<int> parentPool; 
     for (unsigned int i = 0; i < population.size(); i++) {
-      GameState g;
-      g.load(map);
-      vector<CatAgent> cats;
-      for (int catIdx = 1; catIdx < g.getNumAgents(); catIdx++) {
-        cats.push_back(CatAgent(catIdx));
-      }
-      MouseAgent mouse(population[i], cats);
       time_t seconds = time(NULL);
-      int score = run(g, mouse, cats);
+      double score = 0.0; 
+      for (int r = 0; r < numRuns; r++) {
+        GameState g;
+        g.load(map);
+        vector<CatAgent> cats;
+        for (int catIdx = 1; catIdx < g.getNumAgents(); catIdx++) {
+          cats.push_back(CatAgent(catIdx));
+        }
+        MouseAgent mouse(population[i], cats);
+        score += run(g, mouse, cats) / (double) numRuns;
+      }
       if (score > overallBestScore) {
         overallBestScore = score;
         overallBestWeights = population[i];
@@ -92,7 +96,7 @@ void GeneticUtils::getWeights(vector<double>& weights, string map) {
         generationBestScore = score;
         generationBestWeights = population[i];
       }
-      for (int scoreCount = 0; scoreCount < score; scoreCount++) {
+      for (int scoreCount = 0; scoreCount < (int)score; scoreCount++) {
         parentPool.push_back(i);
       }
       parentPool.push_back(i); // so even the 0 score guys have a chance
